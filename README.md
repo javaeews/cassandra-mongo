@@ -98,15 +98,16 @@ Strong consistency can be used for critical patient data, while eventual consist
 #### Credit Card info
 Credit card information is a prefect use case for Cassandra as again we can take advantage of the wide rows to can easily view last n transactions. These transactions can be used to analyse fraud and even locate criminal activities around globe.
 ```
-	CREATE KEYSPACE IF NOT EXISTS transaction WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };
-	CREATE TABLE transaction.credit_card_transactions (
+CREATE KEYSPACE IF NOT EXISTS transaction WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };
+
+CREATE TABLE transaction.credit_card_transactions (
 	credit_card_no text,
 	transaction_time timestamp,
 	location text,
 	issuer text,
 	amount float,
 	PRIMARY KEY (credit_card_no, transaction_time)
-	) WITH CLUSTERING ORDER BY (transaction_time DESC);
+) WITH CLUSTERING ORDER BY (transaction_time DESC);
 
 ```
 
@@ -130,13 +131,13 @@ For example, lets say we have 2 tables, 1 to hold the balance for a users accoun
 
 ```
 CREATE TABLE credit_card_transactions (
-credit_card_no text,
-transaction_time timestamp,
-account_no text,
-location text,
-issuer text,
-amount float,
-PRIMARY KEY (credit_card_no, transaction_time)
+	credit_card_no text,
+	transaction_time timestamp,
+	account_no text,
+	location text,
+	issuer text,
+	amount float,
+	PRIMARY KEY (credit_card_no, transaction_time)
 ) WITH CLUSTERING ORDER BY (transaction_time DESC);
 
 ```
@@ -145,9 +146,9 @@ PRIMARY KEY (credit_card_no, transaction_time)
 CREATE TABLE transaction.account_balance (account_no text,credit_card_no text,last_updated timestamp,balance double,PRIMARY KEY (account_no));
 ```
 
-When we run the update balance process at regular intervals, the **last_updated** timestamp in the account_balance will act as the trigger for getting all the latest transactions to included in the new balance.
+When we run the update balance process at regular intervals, the **last_updated** timestamp in the account_balance will act as the trigger for getting all the latest transactions to included in the new balance.  
 
-So, lets imagine that every night at midnight we run an update process to update the balance of all credit cards. First we will look at the **last_updated** timestamp for the credit_card and use this in our WHERE clause to get all transactions for the credit card after that time.
+So, lets imagine that every night at midnight we run an update process to update the balance of all credit cards. First we will look at the **last_updated** timestamp for the credit_card and use this in our WHERE clause to get all transactions for the credit card after that time.  
 
 ```
 SELECT credit_card_no, last_udpated FROM account_balance WHERE account_no = 1001;
@@ -160,13 +161,13 @@ SELECT amount FROM credit_card_transactions WHERE credit_card_no = <credit_card_
 ```
 
 To finish the update process we need to update the user’s balance with the old balance summed with the new transactions for that day. The important part of this is that we need to update the **last_updated** time to be the last transaction that we have processed.
-So if we have the following transactions that were processed for that day:
+So if we have the following transactions that were processed for that day:  
 
-![](https://cassandrastuff.files.wordpress.com/2013/12/creditcardday1.jpg)
+![](https://cassandrastuff.files.wordpress.com/2013/12/creditcardday1.jpg)  
 
 the **last_updated** time that will be updated in the accounts table will be 2013-10-12 23:00:00. 
 
-This will ensure the entire process is idempotent so if there is any problem we can run the process again to get the same answer.
+This will ensure the entire process is idempotent so if there is any problem we can run the process again to get the same answer.  
 
 
 #### ING Bank 
@@ -174,7 +175,7 @@ This will ensure the entire process is idempotent so if there is any problem we 
 
 > Apache Cassandra’s distributed architecture allows ING Bank to store and retrieve customer data efficiently and reliably across all web and mobile applications. It provides a flexible data model that can accommodate the evolving needs of the bank’s applications.
 > 
-> ING Bank also built their messaging platform with Apache Cassandra. This allows them to process real-time events and ensures guaranteed once delivery of all messages, enabling them to build applications that react quickly to changing market conditions and customer interactions. [<https://planetcassandra.org/usecases/>]
+> ING Bank also built their messaging platform with Apache Cassandra. This allows them to process real-time events and ensures guaranteed once delivery of all messages, enabling them to build applications that react quickly to changing market conditions and customer interactions.  [<https://planetcassandra.org/usecases/>]  
 
 #### Monzo(~Revolut):
 - [ ] Cassandra as a Core Database [PM: Bátor vállalkozás] 
@@ -186,7 +187,7 @@ _Handling failures on Cassandra_
 
 > To address this issue, the team has been using a separate service running continuously in the background that is responsible for detecting and resolving inconsistent data states. This service can either flag the issue for further investigation or even automate the correction process. 
 
-_Monzo experienced an incident in July 2019_ [<https://monzo.com/blog/2019/09/08/why-monzo-wasnt-working-on-july-29th#article>] 
+_Monzo experienced an incident in July 2019_ [<https://monzo.com/blog/2019/09/08/why-monzo-wasnt-working-on-july-29th#article>]  
 - [ ] A configuration error in Cassandra during a scale-up operation forced a stop to all writes and reads to the cluster. 
 
 > This event set off a chain reaction of improvements spanning multiple years to enhance the operational capacity of the database systems. Since then, Monzo has invested in observability, deepening the understanding of Cassandra and other production systems, and we are more confident in all operational matters through runbooks and production practices.
@@ -194,7 +195,7 @@ _Monzo experienced an incident in July 2019_ [<https://monzo.com/blog/2019/09/08
 	
 ## Driver beállítások (timoutok, failover)
 ### Cassandra
-DataStax Java Driver for Apache Cassandra®
+DataStax Java Driver for Apache Cassandra®  
 			
 > #### Write path:
 >  - [ ] convert the statement into a protocol-level Message (CqlRequestHandler constructor);
@@ -222,94 +223,94 @@ DataStax Java Driver for Apache Cassandra®
 > Tracks the state of the nodes in the cluster
 			
 #### What to do when a request failed on a node 
-- retry (same or other node)
-- rethrow
-- ignore
+- retry (same or other node)  
+- rethrow  
+- ignore  
 
-When a query fails, it sometimes makes sense to retry it: the error might be temporary, or the query might work on a different node. 
-The driver uses a retry policy to determine when and how to retry.
+When a query fails, it sometimes makes sense to retry it: the error might be temporary, or the query might work on a different node.  
+The driver uses a retry policy to determine when and how to retry.  
 
-The driver ships with two retry policies: 
+The driver ships with two retry policies:  
 
 - [ ] **DefaultRetryPolicy** (should be preferred in most cases as it only retries when it is perfectly safe to do so, and when the chances of success are high enough to warrant a retry)
 - [ ] **ConsistencyDowngradingRetryPolicy** (In summary: only use this retry policy if you understand the consequences..)
 - [ ] Use your own: specifying the name of a class that implements RetryPolicy
 				
-The policy has several methods that cover different error cases
-Each method returns a RetryVerdict (provides the driver with a RetryDecision to indicate what to do next)
+The policy has several methods that cover different error cases  
+Each method returns a RetryVerdict (provides the driver with a RetryDecision to indicate what to do next)  
 **Four possible retry decisions:**
-- retry on the same node
-- retry on the next node in the query plan for this statement
-- rethrow the exception to the user code (as a failed future if using the asynchronous API)
-- ignore the exception, mark the request as successful, return an empty result set
+- retry on the same node  
+- retry on the next node in the query plan for this statement  
+- rethrow the exception to the user code (as a failed future if using the asynchronous API)  
+- ignore the exception, mark the request as successful, return an empty result set  
 					
 	**Hard-coded rules**
-	cases where retrying is always the right thing -> hard-coded in the driver
-	 --errors before a network write was attempted (safe to retry: the request wasn’t sent -> driver moves to the next node in the query plan)
-    	- select a node 
-		- borrow a connection from the host’s connection pool 
-		- write the message to the connection
+	cases where retrying is always the right thing -> hard-coded in the driver  
+	 --errors before a network write was attempted (safe to retry: the request wasn’t sent -> driver moves to the next node in the query plan)  
+    	- select a node   
+		- borrow a connection from the host’s connection pool   
+		- write the message to the connection  
 						 						 
-	errors that have no chance -> rethrown to the user
-						-QueryValidationException and any of its subclasses
-						-FunctionFailureException
-						-ProtocolError
+	errors that have no chance -> rethrown to the user  
+						-QueryValidationException and any of its subclasses  
+						-FunctionFailureException  
+						-ProtocolError  
 
-Speculative query execution
-Sometimes a Cassandra node might be experiencing difficulties (ex: long GC pause) and take longer than usual to reply. Queries sent to that node -> bad latency.
-One thing we can do-> start a second execution against another node, before the first replied/errored out 
-If that second node replies faster -> response back to the client && cancel the first execution (discarding the response [in flight requests cancellation not supported])
+_Speculative query execution_  
+Sometimes a Cassandra node might be experiencing difficulties (ex: long GC pause) and take longer than usual to reply. Queries sent to that node -> bad latency.  
+One thing we can do-> start a second execution against another node, before the first replied/errored out  
+If that second node replies faster -> response back to the client && cancel the first execution (discarding the response [in flight requests cancellation not supported])  
 				
 Request throttling
-- Pass through(default)
+- Pass through(default)  
 - Concurrency-based(Additional requests get enqueued up to the configured limit)    
-					*max-concurrent-requests = 10000
-					*max-queue-size = 100000
-- Rate-based
-					*max-requests-per-second = 5000 (tracks the rate at which requests start, and enqueues when it exceeds the configured threshold)
-					*max-queue-size = 50000
-					*drain-interval = 1 millisecond (re-check the rate periodically and dequeues when possible)
-- write your own :)
+					*max-concurrent-requests = 10000  
+					*max-queue-size = 100000  
+- Rate-based  
+					*max-requests-per-second = 5000 (tracks the rate at which requests start, and enqueues when it exceeds the configured threshold)  
+					*max-queue-size = 50000  
+					*drain-interval = 1 millisecond (re-check the rate periodically and dequeues when possible)  
+- write your own :)  
 			
 
 ### Object mapper 
-- [ ] removes boilerplate of writing queries: DAOs to access Apache Cassandra™ 
-- [ ] <https://github.com/DataStax-Examples/java-cassandra-driver-from3x-to4x/blob/master/example-4x/src/main/java/com/datastax/samples/SampleCode4x_CRUD_07_ObjectMapping.java>
+- [ ] removes boilerplate of writing queries: DAOs to access Apache Cassandra™   
+- [ ] <https://github.com/DataStax-Examples/java-cassandra-driver-from3x-to4x/blob/master/example-4x/src/main/java/com/datastax/samples/SampleCode4x_CRUD_07_ObjectMapping.java>  
 
 ### JDBC wrapper of the Java Driver for Apache Cassandra® 
-<https://github.com/ing-bank/cassandra-jdbc-wrapper>
+<https://github.com/ing-bank/cassandra-jdbc-wrapper>  
 			
 		
 ### MongoDB
-Java Driver: official MongoDB driver for synchronous Java applications 
+Java Driver: official MongoDB driver for synchronous Java applications   
 <https://github.com/mongodb/mongo-java-driver>
 
-Reactive Streams Driver: asynchronous stream processing
+Reactive Streams Driver: asynchronous stream processing  
 			
 #### localThresholdMS:
-When communicating with multiple instances of MongoDB in a replica set, the driver will only send requests to a server whose response time is less than or equal to the server with the fastest response time plus the local threshold, in milliseconds.
-Default: 15
+When communicating with multiple instances of MongoDB in a replica set, the driver will only send requests to a server whose response time is less than or equal to the server with the fastest response time plus the local threshold, in milliseconds.  
+Default: 15  
 
 #### journal:
-Specifies that the driver must wait for the connected MongoDB instance to group commit to the journal file on disk for all writes.
-Default: false
+Specifies that the driver must wait for the connected MongoDB instance to group commit to the journal file on disk for all writes.  
+Default: false  
 
 #### w:
-Write concern describes the level of acknowledgment requested from MongoDB for write operations to a standalone mongod, replica sets, or sharded clusters. In sharded clusters, mongos instances will pass the write concern on to the shards.
-				"majority" | <number> | <custom write concern name>
-				Default: 1 (write operation has propagated to the standalone mongod or the primary in a replica set.)
+Write concern describes the level of acknowledgment requested from MongoDB for write operations to a standalone mongod, replica sets, or sharded clusters. In sharded clusters, mongos instances will pass the write concern on to the shards.  
+				"majority" | <number> | <custom write concern name>  
+				Default: 1 (write operation has propagated to the standalone mongod or the primary in a replica set.)  
 
 #### retryWrites:
-Specifies that the driver must retry supported write operations if they are unable to complete due to a network error.
-Default: true
+Specifies that the driver must retry supported write operations if they are unable to complete due to a network error.  
+Default: true  
 #### maxConnecting:
-Specifies the maximum number of connections a pool may be establishing concurrently.
-Default: 2
+Specifies the maximum number of connections a pool may be establishing concurrently.  
+Default: 2  
 #### readPreference:
-Read preferences describe the behavior of read operations with regards to replica sets. These parameters allow you to specify read preferences on a per-connection basis in the connection string.
-primary | primaryPreferred | secondary | secondaryPreferred | nearest
-primary: all reads use only the current replica set primary. If unavailable -> error/exception.
-Default: primary
+Read preferences describe the behavior of read operations with regards to replica sets. These parameters allow you to specify read preferences on a per-connection basis in the connection string.  
+primary | primaryPreferred | secondary | secondaryPreferred | nearest  
+primary: all reads use only the current replica set primary. If unavailable -> error/exception.  
+Default: primary  
 			
 
 		
@@ -320,7 +321,7 @@ Data is stored in a sorted manner, facilitating efficient range queries. This or
 Designed primarily for write efficiency, encounter challenges in data locality due to their multi-level storage mechanism. Data is dispersed across different levels, each with its own sorting order, which can complicate direct access patterns. Reading data might require aggregating information from multiple levels, akin to searching through several temporary collections to compile a complete set of works by a specific author. To mitigate these challenges, LSM trees employ mechanisms like bloom filters and caching, enhancing the efficiency of read operations despite the inherent complexity of their structure.
 ### Cassandra
 
-A good way to understand Cassandra is to look at how clusters are physically deployed. Cassandra clusters are organized into nodes, racks, and data centers.
+A good way to understand Cassandra is to look at how clusters are physically deployed. Cassandra clusters are organized into nodes, racks, and data centers.  
 
 ![alt text](image-1.png)
 
@@ -328,45 +329,47 @@ A good way to understand Cassandra is to look at how clusters are physically dep
 - [ ] A ​rack​ refers to a set of Cassandra nodes near one another. A rack can be a physical rack containing nodes connected to a common network switch. In cloud deployments, however, a rack often refers to a collection of machine instances running in the same availability zone
 - [ ] A​ data center​ refers to a collection of logical racks, generally residing in the same building and connected by a reliable network. In cloud deployments, data centers generally map to a cloud region—for example, on AWS, us-west-1, and us-west-2
 
-Cassandra typically stores copies of data across multiple data centers to ensure availability, while preferring to route queries to other nodes in the same data center to maximize performance.
+Cassandra typically stores copies of data across multiple data centers to ensure availability, while preferring to route queries to other nodes in the same data center to maximize performance.  
 
-_Logical ring structure_
-Just as nodes, racks, and data centers describe how Cassandra clusters are physically deployed, the concept of a “ring” is commonly used to explain how data is organized logically.
+_Logical ring structure_  
+Just as nodes, racks, and data centers describe how Cassandra clusters are physically deployed, the concept of a “ring” is commonly used to explain how data is organized logically.  
 
-To decide where data is stored, the partition key is hashed to determine a token. A token is a 64-bit integer ID ranging from -2^63 to +2^63 that is used to identify each partition. The token value determines which Cassandra nodes the data will reside on.
+To decide where data is stored, the partition key is hashed to determine a token. A token is a 64-bit integer ID ranging from -2^63 to +2^63 that is used to identify each partition. The token value determines which Cassandra nodes the data will reside on.  
 
 ```
 PRIMARY KEY((Partition Key), Clustering Keys) 
 ```
-Each Cassandra node in the ring is assigned a range of token values.
-In earlier versions of Cassandra (before version 1.2), token ranges were manually assigned to nodes. A node claimed ownership of the range of values less than or equal to each token and greater than the token of the previous node.
+Each Cassandra node in the ring is assigned a range of token values.  
+In earlier versions of Cassandra (before version 1.2), token ranges were manually assigned to nodes. A node claimed ownership of the range of values less than or equal to each token and greater than the token of the previous node.  
 
-_Node-level architecture_
-The Cassandra daemon manages various in-memory and disk-based data structures. Commit logs are used to record writes to disk as a crash recovery mechanism. One of the reasons that writes in Cassandra are so fast is that all keyspaces share a common commit log, so as soon as a write appends data to the commit log on a replica, as far as the coordinator node is concerned, the write is considered complete.
+_Node-level architecture_  
+The Cassandra daemon manages various in-memory and disk-based data structures. Commit logs are used to record writes to disk as a crash recovery mechanism. One of the reasons that writes in Cassandra are so fast is that all keyspaces share a common commit log, so as soon as a write appends data to the commit log on a replica, as far as the coordinator node is concerned, the write is considered complete.  
 
-Sorted String Tables (**SSTables**) provide permanent on-disk storage for Cassandra.
-When Cassandra writes data, **SSTables** aren’t stored right away. This is because writes are stored in **Memtables** to maximize performance and are only flushed periodically to disk.
-Row caches and key caches are used to cache frequently accessed data to help with performance. For small tables, the entire table may be cached in memory.
+Sorted String Tables (**SSTables**) provide permanent on-disk storage for Cassandra.  
+When Cassandra writes data, **SSTables** aren’t stored right away. This is because writes are stored in **Memtables** to maximize performance and are only flushed periodically to disk.  
+Row caches and key caches are used to cache frequently accessed data to help with performance. For small tables, the entire table may be cached in memory.  
 
-![alt text](image.png)
+![alt text](image.png)  
 
-_How Cassandra writes data_
+_How Cassandra writes data_  
 - [x] When data is written to a node, it is first stored to the commit log so that the write can be recovered if the node fails
 - [x] A copy of the data is also stored in the **memtable** where it is accessible for subsequent read operations or future updates without the need to go to disk
 - [x] If the row cache is in use and there is an older copy of the row already in the cache, the old copy is invalidated and replaced with the new data value
-- [x] In the background, Cassandra monitors the size of the **memtable**. If the **memtable** reaches a certain threshold size, Cassandra writes the **memtable** data to **SSTables** which are never deleted. Cassandra has a mechanism called compaction that runs periodically to consolidate **SSTables**.
+- [x] In the background, Cassandra monitors the size of the **memtable**. If the **memtable** reaches a certain threshold size, Cassandra writes the **memtable** data to **SSTables** which are never deleted. Cassandra has a mechanism called compaction that runs periodically to consolidate **SSTables**.  
 
-_Write performance_
-One of the most impressive features of Cassandra is its exceptional write performance. Cassandra can complete a write as soon as data is logged to the commit log while other operations happen asynchronously. Also, performance scales directly with the number of nodes in the cluster. Cassandra has been shown to deliver up to one million writes per second in production-scale clusters.
+_Write performance_  
+One of the most impressive features of Cassandra is its exceptional write performance. Cassandra can complete a write as soon as data is logged to the commit log while other operations happen asynchronously. Also, performance scales directly with the number of nodes in the cluster. Cassandra has been shown to deliver up to one million writes per second in production-scale clusters.  
 
-> ​Cassandra delivers one million writes per second at Netflix - <https://medium.com/netflix-techblog/benchmarking-cassandra-scalability-on-aws-over-a-million-writes-per-second-39f45f066c9e>
+> ​Cassandra delivers one million writes per second at Netflix - <https://medium.com/netflix-techblog/benchmarking-cassandra-scalability-on-aws-over-a-million-writes-per-second-39f45f066c9e>  
 
-_How Cassandra reads data_
-Reads in Cassandra are more complicated than writes. The read operation begins when a client connects to a coordinator node with a read query. Like a write request, the coordinator node will use the partitioner to determine which nodes hold replicas of the data.
-Like writes, the performance of a read depends on the consistency required for the query. As a reminder, read consistency refers to the number of replicas that need to agree before a result is considered valid. If there is no consensus on a result, Cassandra will internally run a “read repair” operation, forcing Cassandra to update pending changes lingering on replicas before returning a result to the client.
-This is an example of how requiring strong consistency can affect performance. For each replica contacted during a read, Cassandra needs to perform several steps and combine results from the active **memtable** and potentially multiple **SSTables** as well.
-Figure describes the sequence of operations on each replica node:
-![alt text](image-2.png)
+_How Cassandra reads data_  
+
+Reads in Cassandra are more complicated than writes. The read operation begins when a client connects to a coordinator node with a read query. Like a write request, the coordinator node will use the partitioner to determine which nodes hold replicas of the data.  
+Like writes, the performance of a read depends on the consistency required for the query. As a reminder, read consistency refers to the number of replicas that need to agree before a result is considered valid. If there is no consensus on a result, Cassandra will internally run a “read repair” operation, forcing Cassandra to update pending changes lingering on replicas before returning a result to the client.  
+This is an example of how requiring strong consistency can affect performance. For each replica contacted during a read, Cassandra needs to perform several steps and combine results from the active **memtable** and potentially multiple **SSTables** as well.  
+
+Figure describes the sequence of operations on each replica node:  
+![alt text](image-2.png)  
 
 - [x] When querying a replica, the first place to look is in the row cache. If the needed data is available in the row cache, it can be returned immediately
 - [x] Next, Cassandra will check the key cache (if enabled). If the partition key is found in the key cache, Cassandra can use the key to learn where data is stored by reading an in-memory compressed offset map
@@ -374,15 +377,16 @@ Figure describes the sequence of operations on each replica node:
 - [x] After this, Cassandra fetches data from **SSTables** on disk and combines it with data from the **memtable** to construct an up-to-date view of the data queried
 - [x] Finally, if row caching is enabled, Cassandra will store the data in the row cache (to accelerate subsequent reads of the same data) and return results to the coordinator node
 
-> These steps are slightly simplified. Cassandra has additional optimizations such as in -memory **bloom filters** that can speed up the process of partition key lookups by narrowing the pool of keys to search
+> These steps are slightly simplified. Cassandra has additional optimizations such as in -memory **bloom filters** that can speed up the process of partition key lookups by narrowing the pool of keys to search  
 
-_A typical customer problem_
-Consider the example of a DB managing millions of customer accounts. Focus on just two tables:
-A ​customer table​ maintains a list of all ​customers. Contains details like the customer’s unique ID, name, encrypted password, etc.
-A​ customer_transactions table​ logs a record every time a customer makes any kind of transaction: purchases, transfers, etc.
-Now imagine a service with ten million user accounts where each user has logged an average of 1000 transaction events, each approximately 1 KB in size. This works out to ten TB of data in the customer_transactions table alone, and that’s before replication and assuming no overhead.
+_A typical customer problem_  
 
-It appears that customer names and email addresses are being stored redundantly, but as we’ll see shortly, this is just a matter of how CQL presents tabular data views. Cassandra supports static columns ​​where a single value is associated with each partition key.
+Consider the example of a DB managing millions of customer accounts. Focus on just two tables:  
+A ​customer table​ maintains a list of all ​customers. Contains details like the customer’s unique ID, name, encrypted password, etc.  
+A​ customer_transactions table​ logs a record every time a customer makes any kind of transaction: purchases, transfers, etc.  
+Now imagine a service with ten million user accounts where each user has logged an average of 1000 transaction events, each approximately 1 KB in size. This works out to ten TB of data in the customer_transactions table alone, and that’s before replication and assuming no overhead.  
+
+It appears that customer names and email addresses are being stored redundantly, but as we’ll see shortly, this is just a matter of how CQL presents tabular data views. Cassandra supports static columns ​​where a single value is associated with each partition key.  
 
 **cust_id** | **cust_name** | **cust_email** | **event_time** | **event_type** | **...**
 ---------|----------|---------|---------|---------|---------
@@ -394,20 +398,20 @@ kTe82rn2 | Fred Flinstone | fred@gmail.com | 2018-06-02T19:43:55 | refund
 Aj50nT63 | Barney Rubble | rubble@hotmail.com | 2018-06-02T19:44:01 | refund    
 rTq59vd6 | Joe Rockhead | joer@yahoo.com | 2019-03-11T06:24:03 | transfer   
 
-_Scaling Cassandra_
-One of the biggest challenges that database administrators inevitably run into is the need to scale their database. Databases may need to grow for several reasons:
+_Scaling Cassandra_  
+One of the biggest challenges that database administrators inevitably run into is the need to scale their database. Databases may need to grow for several reasons:  
 - [ ] The amount of data is growing, and data partitions on cluster nodes are filling up
 - [ ] Transaction volumes are growing, and it would be useful to distribute transactions across more cluster nodes for added performance
 - [ ] Data access patterns are changing
 
-_Rules of a Good Partition_
+_Rules of a Good Partition_  
 - [x] Store together what you retrieve together
-- [x] Avoid big partitions
-	● Up to 2 billion cells per partition
-	● Up to ~100k rows in a partition
-	● Up to ~100MB in a Partition 
-- [x] Avoid hot partitions
-PRIMARY KEY (user_id) vs. PRIMARY KEY ((country), user_id);
+- [x] Avoid big partitions  
+	● Up to 2 billion cells per partition  
+	● Up to ~100k rows in a partition  
+	● Up to ~100MB in a Partition   
+- [x] Avoid hot partitions  
+PRIMARY KEY (user_id) vs. PRIMARY KEY ((country), user_id);  
 				
 ```
 public class SkipListMemtable
@@ -417,22 +421,22 @@ public class SkipListMemtable
 	...
 }
 ```
-Cassandra data is partitioned based on the Token of row's PartitionKey. The token is gerenated using a Hash Function. 
+Cassandra data is partitioned based on the Token of row's PartitionKey. The token is gerenated using a Hash Function.   
 
-Hashing with the Murmur3Partitioner:
+Hashing with the Murmur3Partitioner:  
 ![alt text](image-5.png)
 
-Cassandra offers the following partitioners that can be set in the cassandra.yaml file:
+Cassandra offers the following partitioners that can be set in the cassandra.yaml file:  
 - [ ] Murmur3Partitioner (default): uniformly distributes data across the cluster based on MurmurHash hash values.
 - [ ] RandomPartitioner: uniformly distributes data across the cluster based on MD5 hash values.
 - [ ] ByteOrderedPartitioner: keeps an ordered distribution of data lexically by key bytes
 
-The Murmur3Partitioner is the default partitioning strategy for Cassandra 1.2 and later new clusters and the right choice for new clusters in almost all cases. However, the partitioners are not compatible and data partitioned with one partitioner cannot be easily converted to the other partitioner.
+The Murmur3Partitioner is the default partitioning strategy for Cassandra 1.2 and later new clusters and the right choice for new clusters in almost all cases. However, the partitioners are not compatible and data partitioned with one partitioner cannot be easily converted to the other partitioner.  
 
-> One such fastest hash algorithm is the **MurmurHash**, which has gained widespread popularity due to its impressive speed and minimal computational resources. **MurmurHash** is a non-cryptographic hash function that delivers exceptional performance and a low collision rate. It is particularly suitable for use in hashing non-critical data such as database keys, cache hashes, or network protocol checksums. Another contender in the race for the fastest hash algorithm is **CityHash**, developed by Google engineers. **CityHash** offers remarkable speed and quality, making it ideal for applications requiring large-scale, parallel processing. It is also highly adaptable, allowing developers to optimize the algorithm according to specific hardware configurations. [<https://locall.host/which-hash-algorithm-is-fastest/>]
+> One such fastest hash algorithm is the **MurmurHash**, which has gained widespread popularity due to its impressive speed and minimal computational resources. **MurmurHash** is a non-cryptographic hash function that delivers exceptional performance and a low collision rate. It is particularly suitable for use in hashing non-critical data such as database keys, cache hashes, or network protocol checksums. Another contender in the race for the fastest hash algorithm is **CityHash**, developed by Google engineers. **CityHash** offers remarkable speed and quality, making it ideal for applications requiring large-scale, parallel processing. It is also highly adaptable, allowing developers to optimize the algorithm according to specific hardware configurations. [<https://locall.host/which-hash-algorithm-is-fastest/>]  
 
 ```
-Assume you're trying to locate where the rows corresponding to the usernames abcd and abce and abcf are stored.
+Assume you're trying to locate where the rows corresponding to the usernames abcd and abce and abcf are stored.  
 
 The hex representation of these strings are:
 - 0x61626364 
@@ -450,7 +454,7 @@ So, in the case of MurmurHash3, the tokens of the strings will be these 3 values
 - 0x61626366
 
 ```
-Cassandra's current memtable implementation uses a hierarchy of comparison-based data structures to organize data:
+Cassandra's current memtable implementation uses a hierarchy of comparison-based data structures to organize data:  
 - [ ] a concurrent skip list is used to index database partitions
 - [ ] separate B-Trees are used to index rows within a partition, columns within a row, and individual cells within a complex column
 
@@ -514,22 +518,22 @@ public class SkipListMemtable
 ```
 		
 ### MongoDB
-Supports pluggable storage engines -> utilizes memory differently 
+Supports pluggable storage engines -> utilizes memory differently   
 - [ ] in-memory storage engine -> active data only in memory 
-- [ ] default: WiredTiger storage engine [[source.wiredtiger.com](source.wiredtiger.com)] (MongoDB 3.2 <) 
-				*comes in both B-tree and LSM configurations
-				*however, MongoDB ships WiredTiger in only B-tree configuration keeping it simple for users
-				*uses MultiVersion Concurrency Control (MVCC). 
-				 At the start of an operation -> provides a point-in-time snapshot of the data to the operation
-				 Snapshot -> a consistent view of the in-memory data
-				*When writing to disk, WiredTiger writes all the data in a snapshot to disk (consistent way across all data files)
+- [ ] default: WiredTiger storage engine [[source.wiredtiger.com](source.wiredtiger.com)] (MongoDB 3.2 <)   
+				*comes in both B-tree and LSM configurations  
+				*however, MongoDB ships WiredTiger in only B-tree configuration keeping it simple for users  
+				*uses MultiVersion Concurrency Control (MVCC)   
+				 At the start of an operation -> provides a point-in-time snapshot of the data to the operation  
+				 Snapshot -> a consistent view of the in-memory data  
+				*When writing to disk, WiredTiger writes all the data in a snapshot to disk (consistent way across all data files)  
 			
 **durability: Journal + Checkpoint**
 - [ ] Journal:
 	For each write -> MongoDB writes the changes into Journal files (~transaction log files, which is basically a WAL mechanism used by MongoDB
 - [ ] Checkpoint:
-	Create checkpoints -> write the snapshot data to disk
-	At every checkpoint interval (Def. 60 sec), MongoDB flushes the changes in the cache to their respective data files
+	Create checkpoints -> write the snapshot data to disk  
+	At every checkpoint interval (Def. 60 sec), MongoDB flushes the changes in the cache to their respective data files  
 
 ![alt text](image-6.png)
 
@@ -562,21 +566,21 @@ Supports pluggable storage engines -> utilizes memory differently
 ## Tesztelés
 ### Cassandra
 	- [ ] Monzo(~Revolut), ING Bank, financial transactions.. <-> org.apache.cassandra.utils.btree.BTree.java ~4197 lines 
-	- [ ] High degree of confidence for every commit: 
-				- the database is working as expected 
-				- not only for an exact set of operations (unit & integration tests) 
-				- potentially for any use-case & combination of operations 
-				- under circumstances comparable to production
-	- [ ] Harry
-				- combine stress & integration-testing tools
-				- <https://issues.apache.org/jira/browse/CASSANDRA-16453>
-				- <https://cassandra.apache.org/_/blog/Harry-an-Open-Source-Fuzz-Testing-and-Verification-Tool-for-Apache-Cassandra.html>
+	- [ ] High degree of confidence for every commit:   
+				- the database is working as expected   
+				- not only for an exact set of operations (unit & integration tests)   
+				- potentially for any use-case & combination of operations   
+				- under circumstances comparable to production  
+	- [ ] Harry  
+				- combine stress & integration-testing tools  
+				- <https://issues.apache.org/jira/browse/CASSANDRA-16453>  
+				- <https://cassandra.apache.org/_/blog/Harry-an-Open-Source-Fuzz-Testing-and-Verification-Tool-for-Apache-Cassandra.html>  
 			
 		
 			
 ## Lekérdező nyelv
 ### Cassandra
-Introduced the Cassandra Query Language (CQL). CQL is a simple interface for accessing Cassandra, as an alternative to the traditional Structured Query Language (SQL).
+Introduced the Cassandra Query Language (CQL). CQL is a simple interface for accessing Cassandra, as an alternative to the traditional Structured Query Language (SQL).  
 			
 ```
     CREATE KEYSPACE IF NOT EXISTS transaction WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };
@@ -590,26 +594,26 @@ Introduced the Cassandra Query Language (CQL). CQL is a simple interface for acc
 
 ## Tranzakció támogatás
 ### Cassandra
-- [ ] Atomic, isolated, durable transactions. AID. C?
-- [ ] Eventual/tunable consistency: lets the user decide how strong or eventual they want each transaction’s consistency to be
+- [ ] Atomic, isolated, durable transactions. AID. C?  
+- [ ] Eventual/tunable consistency: lets the user decide how strong or eventual they want each transaction’s consistency to be  
 
 **Tunable consistency**
-In distributed databases, it takes time for updates to propagate across networks to remote cluster nodes. Unlike an RDBMS, which can guarantee consistency (at the expense of performance and scalability), distributed databases are usually “eventually consistent.”
-An underrated feature of Cassandra is that it provides tunable consistency, allowing users to manage the trade-off between data consistency and performance. Consistency can be managed globally or can be adjusted for individual read and write operations.
+In distributed databases, it takes time for updates to propagate across networks to remote cluster nodes. Unlike an RDBMS, which can guarantee consistency (at the expense of performance and scalability), distributed databases are usually “eventually consistent.”  
+An underrated feature of Cassandra is that it provides tunable consistency, allowing users to manage the trade-off between data consistency and performance. Consistency can be managed globally or can be adjusted for individual read and write operations.  
 
 ##### ATOMICITY
 - [ ] Write: 
-- Atomic at partition level (insertions or updates of two or more rows in the same partition are treated as one write operation)
-- If multiple client sessions update the same columns in a row concurrently, the most recent update is the one seen by readers
+- Atomic at partition level (insertions or updates of two or more rows in the same partition are treated as one write operation)  
+- If multiple client sessions update the same columns in a row concurrently, the most recent update is the one seen by readers  
 
 ##### ISOLATION
-- [ ] Write and delete operations are performed with full row-level isolation 
-write to a row within a single partition on a single node is only visible to the client performing the operation (until it is complete)
+- [ ] Write and delete operations are performed with full row-level isolation   
+write to a row within a single partition on a single node is only visible to the client performing the operation (until it is complete)  
 
 ##### DURABILITY
-- [ ] Writes are recorded: 
+- [ ] Writes are recorded:   
 in memory and to the commit log on disk before they are acknowledged as a success 
-- [ ] Crash/server failure before the memtables are flushed to disk: 
+- [ ] Crash/server failure before the memtables are flushed to disk:   
 the commit log is replayed on restart to recover any lost writes
 		
 ### MongoDB
@@ -620,71 +624,71 @@ the commit log is replayed on restart to recover any lost writes
 			
 ##### ATOMICITY
 - [ ] All write operations in memory 
-- [ ] Will not be written to disk until the entire transaction is committed -> size of the transaction must fit in memory
-					*There is one case that atomicity of transactions is not honored..
-					*There is another case that atomicity may be violated if a transaction operates..
+- [ ] Will not be written to disk until the entire transaction is committed -> size of the transaction must fit in memory  
+					*There is one case that atomicity of transactions is not honored..  
+					*There is another case that atomicity may be violated if a transaction operates..  
 				
 ##### ISOLATION
-WiredTiger supports three isolation levels:
+WiredTiger supports three isolation levels:  
 
 -**read uncommitted** (able to see updates done by all the existing transactions, including the concurrent ones)
 -**read committed** (able to see updates done by other transactions that have been committed when the reading happens)
--**snapshot** [default] (able to see updates done by other transactions that are committed before it starts) 
-*write operations -> the only supported
-*guarantees repeated reads -> same result except: in one scenario using timestamps
+-**snapshot** [default] (able to see updates done by other transactions that are committed before it starts)   
+*write operations -> the only supported  
+*guarantees repeated reads -> same result except: in one scenario using timestamps  
 					  
 ##### VISIBILITY
-To read a key -> traverses all the updates of that key still in memory(linked list with the newest update at the head) 
-				no value is visible -> checks on the disk (version chosen to be written to disk in the last reconciliation) 
-					still invisible -> search the history store to check if there is a version visible to the reader there
+To read a key -> traverses all the updates of that key still in memory(linked list with the newest update at the head)   
+				no value is visible -> checks on the disk (version chosen to be written to disk in the last reconciliation)   
+					still invisible -> search the history store to check if there is a version visible to the reader there  
 
 ##### DURABILITY
-*commit level: If Logging is enabled on the table. 
-After commit -> guaranteed to survive restart
+*commit level: If Logging is enabled on the table.   
+After commit -> guaranteed to survive restart  
 				
-*checkpoint level: change survives restart <- included in the last checkpoint(successful)
+*checkpoint level: change survives restart <- included in the last checkpoint(successful)  
 				
-Prepared Transactions:
-				for implementing distributed transactions through two-phase commit (only work under snapshot isolation)
-				+phase: prepared phase 
-					before rollback/commit phase
-				After prepare -> no more read/write on the transaction
-				A two-phase distributed transaction algorithm can rely on the prepared state to reach consensus among all the nodes for committing
+Prepared Transactions:  
+				for implementing distributed transactions through two-phase commit (only work under snapshot isolation)  
+				+phase: prepared phase   
+					before rollback/commit phase  
+				After prepare -> no more read/write on the transaction  
+				A two-phase distributed transaction algorithm can rely on the prepared state to reach consensus among all the nodes for committing  
 
-Folytatás innen: https://source.wiredtiger.com/develop/arch-timestamp.html
-Illetve ez is jó lenne még hozzá, ha belefér: https://www.mongodb.com/docs/manual/core/transactions-production-consideration/#outside-reads-during-commit
+Folytatás innen: https://source.wiredtiger.com/develop/arch-timestamp.html  
+Illetve ez is jó lenne még hozzá, ha belefér: https://www.mongodb.com/docs/manual/core/transactions-production-consideration/#outside-reads-during-commit  
 			
 
 			
 ## Isolation/locking mechanikák
 ### Cassandra	
-Does not use RDBMS ACID transactions with rollback or locking mechanisms, but instead offers atomic, isolated, and durable transactions 
-with eventual/tunable consistency that lets the user decide how strong or eventual they want each transaction's consistency to be
+Does not use RDBMS ACID transactions with rollback or locking mechanisms, but instead offers atomic, isolated, and durable transactions   
+with eventual/tunable consistency that lets the user decide how strong or eventual they want each transaction's consistency to be  
 			
 ## Skálázhatóság
 ### Cassandra
 #### Vertical scalability
-increasing the capacity of a single machine or node (upgrading hardware such as RAM, CPU, storage) However, vertical scalability 
-				can be costly and resource-intensive: acquiring and operating more powerful hardware comes with financial investments
-				migrating to a new system with increased capacity requires careful planning and effort, especially for transferring large volumes of data
+increasing the capacity of a single machine or node (upgrading hardware such as RAM, CPU, storage) However, vertical scalability   
+				can be costly and resource-intensive: acquiring and operating more powerful hardware comes with financial investments  
+				migrating to a new system with increased capacity requires careful planning and effort, especially for transferring large volumes of data  
 		
 #### Horizontal scalability
-adding more machines or nodes, workload is distributed across multiple machines
-Based on nodes, using lower commodity hardware 
-double capacity/throughput -> double the number of nodes
-This linear scalability applies essentially indefinitely
-has become one of Cassandra’s key strengths
+adding more machines or nodes, workload is distributed across multiple machines  
+Based on nodes, using lower commodity hardware   
+double capacity/throughput -> double the number of nodes  
+This linear scalability applies essentially indefinitely  
+has become one of Cassandra’s key strengths  
 	
 ## Támogatott feature-ok
 		TBD
 
 ## Érdekességek Cassandra oldalról
 
-avagy eme előadások vázlata..
+avagy eme előadások vázlata..  
 
-https://www.youtube.com/watch?v=xF5y_n9viv8
-https://youtu.be/xF5y_n9viv8?t=4028
-https://www.youtube.com/watch?v=ZYnWVOY6EWk
+https://www.youtube.com/watch?v=xF5y_n9viv8  
+https://youtu.be/xF5y_n9viv8?t=4028  
+https://www.youtube.com/watch?v=ZYnWVOY6EWk  
 		
 - [ ] Decentralised
 - [ ] Linear upscale
@@ -710,8 +714,5 @@ https://www.youtube.com/watch?v=ZYnWVOY6EWk
 ## Források
 
 https://medium.com/@mndpsngh21/understanding-the-log-structured-merge-lsm-tree-a-deep-dive-into-efficient-data-storage-d7ef3a7562ba
-LSM tree
-
 ~~The performance of the in-memory buffer determines the peak write throughput that the database as a whole can achieve, while the amount of data that can be placed in it is a primary determinant of the achievable sustained throughput, as larger buffers enable a lower number of subsequent compaction passes over the data.~~
-
 ~~The general format is: PRIMARY KEY((Partition Key), Clustering Keys) Where when there are no parenthesis, the first column is assumed to be the partition key. ~~
