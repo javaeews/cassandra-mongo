@@ -352,10 +352,10 @@ Row caches and key caches are used to cache frequently accessed data to help wit
 ![alt text](image.png)  
 
 _How Cassandra writes data_  
-- [x] When data is written to a node, it is first stored to the commit log so that the write can be recovered if the node fails
-- [x] A copy of the data is also stored in the **memtable** where it is accessible for subsequent read operations or future updates without the need to go to disk
+- [x] When data is written to a node, it is first(not exactly, it is a kind of paral. op.) stored to the commit log so that the write can be recovered if the node fails
+- [x] A copy of the data is also stored in the **memtable** where it is accessible for subsequent read operations or future updates without the need to go to disk (**Memtable**/Table basis)
 - [x] If the row cache is in use and there is an older copy of the row already in the cache, the old copy is invalidated and replaced with the new data value
-- [x] In the background, Cassandra monitors the size of the **memtable**. If the **memtable** reaches a certain threshold size, Cassandra writes the **memtable** data to **SSTables** which are never deleted. Cassandra has a mechanism called compaction that runs periodically to consolidate **SSTables**.  
+- [x] In the background, Cassandra monitors the size of the **memtable**. If the **memtable** reaches a certain threshold size, Cassandra writes the **memtable** data to **SSTables** which are never deleted. (**SSTable(s)**/Table basis) Cassandra has a mechanism called compaction that runs periodically to consolidate **SSTables**.  
 
 _Write performance_  
 One of the most impressive features of Cassandra is its exceptional write performance. Cassandra can complete a write as soon as data is logged to the commit log while other operations happen asynchronously. Also, performance scales directly with the number of nodes in the cluster. Cassandra has been shown to deliver up to one million writes per second in production-scale clusters.  
@@ -594,11 +594,14 @@ SELECT * FROM transaction.credit_card_transactions;
 
 ## Tranzakció támogatás
 ### Cassandra
-- [ ] Atomic, isolated, durable transactions. With restrictions of c.  
+- [ ] Atomic, isolated, durable transactions. With restrictions.. 
 
 
-- [ ] The cruel reality is as follows:
-_As a non-relational database, Cassandra does not support joins or foreign keys, and consequently does not offer consistency in the ACID sense. Cassandra supports atomicity and isolation at the row-level, but trades transactional isolation and atomicity for high availability and fast write performance. Cassandra writes are durable._    
+- [ ] The cruel reality is as follows:   
+  
+_As a non-relational database, Cassandra does not support joins or foreign keys, and consequently does not offer consistency in the ACID sense. Cassandra supports atomicity and isolation at the row-level, but trades transactional isolation and atomicity for high availability and fast write performance. Cassandra writes are durable._   
+
+# Every guarantee concerns TUPLE LEVEL ONLY !!!
 
 
 - [ ] Eventual/tunable consistency: lets the user decide how strong or eventual they want each transaction’s consistency to be  
