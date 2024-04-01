@@ -565,16 +565,16 @@ Supports pluggable storage engines -> utilizes memory differently
 	
 ## Tesztelés
 ### Cassandra
-	- [ ] Monzo(~Revolut), ING Bank, financial transactions.. <-> org.apache.cassandra.utils.btree.BTree.java ~4197 lines 
-	- [ ] High degree of confidence for every commit:   
-				- the database is working as expected   
-				- not only for an exact set of operations (unit & integration tests)   
-				- potentially for any use-case & combination of operations   
-				- under circumstances comparable to production  
-	- [ ] Harry  
-				- combine stress & integration-testing tools  
-				- <https://issues.apache.org/jira/browse/CASSANDRA-16453>  
-				- <https://cassandra.apache.org/_/blog/Harry-an-Open-Source-Fuzz-Testing-and-Verification-Tool-for-Apache-Cassandra.html>  
+- [ ] Monzo(~Revolut), ING Bank, financial transactions.. <-> org.apache.cassandra.utils.btree.BTree.java ~4197 lines 
+- [ ] High degree of confidence for every commit:   
+- the database is working as expected   
+- not only for an exact set of operations (unit & integration tests)   
+- potentially for any use-case & combination of operations   
+- under circumstances comparable to production  
+- [ ] Harry  (helyesség)
+- combine stress & integration-testing tools  
+- <https://issues.apache.org/jira/browse/CASSANDRA-16453>  
+- <https://cassandra.apache.org/_/blog/Harry-an-Open-Source-Fuzz-Testing-and-Verification-Tool-for-Apache-Cassandra.html>  
 			
 		
 			
@@ -583,18 +583,24 @@ Supports pluggable storage engines -> utilizes memory differently
 Introduced the Cassandra Query Language (CQL). CQL is a simple interface for accessing Cassandra, as an alternative to the traditional Structured Query Language (SQL).  
 			
 ```
-    CREATE KEYSPACE IF NOT EXISTS transaction WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };
+CREATE KEYSPACE IF NOT EXISTS transaction WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };
 
-    CREATE TABLE transaction.credit_card_transactions ( credit_card_no text, transaction_time timestamp, location text, issuer text, amount float, PRIMARY KEY (credit_card_no, transaction_time) )  WITH CLUSTERING ORDER BY (transaction_time DESC);
+CREATE TABLE transaction.credit_card_transactions ( credit_card_no text, transaction_time timestamp, location text, issuer text, amount float, PRIMARY KEY (credit_card_no, transaction_time) )  WITH CLUSTERING ORDER BY (transaction_time DESC);
 
-    INSERT into transaction.credit_card_transactions (credit_card_no, transaction_time, location, issuer, amount) VALUES ('1234-9876-1918-5432', '2013-09-29 14:00', 'LONDON', 'NetFlix', 5.99);
+INSERT into transaction.credit_card_transactions (credit_card_no, transaction_time, location, issuer, amount) VALUES ('1234-9876-1918-5432', '2013-09-29 14:00', 'LONDON', 'NetFlix', 5.99);
 	
-    SELECT * FROM transaction.credit_card_transactions;
+SELECT * FROM transaction.credit_card_transactions;
 ```		
 
 ## Tranzakció támogatás
 ### Cassandra
-- [ ] Atomic, isolated, durable transactions. AID. C?  
+- [ ] Atomic, isolated, durable transactions. With restrictions of c.  
+
+
+- [ ] The cruel reality is as follows:
+_As a non-relational database, Cassandra does not support joins or foreign keys, and consequently does not offer consistency in the ACID sense. Cassandra supports atomicity and isolation at the row-level, but trades transactional isolation and atomicity for high availability and fast write performance. Cassandra writes are durable._    
+
+
 - [ ] Eventual/tunable consistency: lets the user decide how strong or eventual they want each transaction’s consistency to be  
 
 **Tunable consistency**
@@ -625,8 +631,8 @@ the commit log is replayed on restart to recover any lost writes
 ##### ATOMICITY
 - [ ] All write operations in memory 
 - [ ] Will not be written to disk until the entire transaction is committed -> size of the transaction must fit in memory  
-					*There is one case that atomicity of transactions is not honored..  
-					*There is another case that atomicity may be violated if a transaction operates..  
+*There is one case that atomicity of transactions is not honored..  
+*There is another case that atomicity may be violated if a transaction operates..  
 				
 ##### ISOLATION
 WiredTiger supports three isolation levels:  
@@ -679,8 +685,6 @@ double capacity/throughput -> double the number of nodes
 This linear scalability applies essentially indefinitely  
 has become one of Cassandra’s key strengths  
 	
-## Támogatott feature-ok
-		TBD
 
 ## Érdekességek Cassandra oldalról
 
@@ -711,11 +715,6 @@ https://www.youtube.com/watch?v=ZYnWVOY6EWk
 - [ ] Too many partition is not a problem.
 - [ ] Hot partitions to be avoided: eg. video_id -> uneven
 
-## Források
-
-https://medium.com/@mndpsngh21/understanding-the-log-structured-merge-lsm-tree-a-deep-dive-into-efficient-data-storage-d7ef3a7562ba
-~~The performance of the in-memory buffer determines the peak write throughput that the database as a whole can achieve, while the amount of data that can be placed in it is a primary determinant of the achievable sustained throughput, as larger buffers enable a lower number of subsequent compaction passes over the data.~~
-~~The general format is: PRIMARY KEY((Partition Key), Clustering Keys) Where when there are no parenthesis, the first column is assumed to be the partition key. ~~
 
 ## Egyebek
 
@@ -725,7 +724,32 @@ https://medium.com/@mndpsngh21/understanding-the-log-structured-merge-lsm-tree-a
 - [ ] Utóbbi verziók kezdtek már el támogatni olyan ígéretesnek tűnő feature koszorút, amiben láthattunk pehelysúlyú tranzakciót, kötegelt utasítás végrehajtást és egyéb szép dolgokat, de mára már a napnál is világosabb, hogy gyakorlatilag érdemben senki sem használja őket. Olyan árat kellene értük fizetni, ami alapjaiban törné össze azt a víziót, amit a Cassandra képvisel már a kezdetek óta.
 - [ ] Szintén nagy volt a csábítás, mikor a Cassandra honlapján végigolvastam az esettanulmányok menüpontban összegyűjtött "From startups to the largest enterprises, the world runs on Cassandra" igen hosszú és széles spektrumú beszámolóit.
 - [ ] Ezek közt is van egy hatalmas kakukktojás, a Monzo. Ha nagyon leegyszerűsítem, akkor tekinthetjük egy kisebb Revolutnak is. És ott virít a mondat, hogy elsődleges adatbázisnak a Cassandrát választották. Elsőre kicsit ijesztő és hihetetlen volt, de valóban ez a helyzet. Ahol a tranzakció, mint fogalom is értelmezhetetlen, elkezdünk tárolni ügyfél/pénzügyi adatokat.
-Egyedül egy mutex amit fel tudunk mutatni Cassandra oldalról, de azért valljuk be, ez sokra nem jogosít fel minket. 
+Egyedül egy mutex amit fel tudunk mutatni Cassandra oldalról(row level atomicity), de azért valljuk be, ez sokra nem jogosít fel minket. 
 Elég sok anyagot próbáltam átolvasni, hogy kicsit jobban belelássak a részletekbe és némi kitartás után rábukkantam egy beszélgetés leiratának, ami által azért kicsit jobban beláthattam már a kulisszák mögé.
+
+> Cassandra doesn’t provide – Doesn’t have kind of acid transactions like that. So you kind of
+need to do that yourself. So we at Monzo, we actually use etcd for that, which is another
+distributed key-value store which runs – We run it in memory.   
+
 - [ ] Szóval Monzóék a józan észnek nem ellentmondva, bizony keményen körülbástyázták Cassandra jósnőnket megfelelő failover, lockolást biztosító és egyéb folyamatokkal.
-Így azért már hihetőbb a teljes kép. 
+Így azért már hihetőbb a teljes kép.  
+
+
+- [ ] Citing from <https://softwareengineeringdaily.com/wp-content/uploads/2018/06/SED616-Monzo-Bankbuilding.pdf> :
+  
+> Given the distributed nature, there are instances where mutual exclusivity and locking become imperative. Here, etcd providing distributed locking capabilities. Without proper locking, concurrent modifications can lead to inconsistent or corrupted data. Locks ensure that only one process can modify the data at a time, maintaining its integrity.   
+
+>  We use etcd to basically provide that locking. So we would have a service which should be a process running on a machine somewhere, which is writing to Cassandra. Before we do that, we would acquire a lock in etcd, which is basically a distributed key-value store which runs in memory. So one service would insert a key into etcd with a lock ID, which would probably be something like the customer ID or something, basically the scope that we want to lock on. Then other services if someone was trying to do a concurrent read or current-current write and they wanted consistent view of the data, they would also try to acquire that same key in etcd, and if the key already exists, they would wait until it is deleted, because that would indicate that another service has acquired that lock. Then, yeah, when that lock is available, then the other service – So the services are basically serialized. It basically allows you to do kind of serialized access to things, serialized access to anything just in your service. So that’s how we kind of lock around Cassandra.   
+
+> many operations in our platform don’t require strict ordering. If you and I both try to make a payment to pay our friends at the same time and one happens before the other, that doesn’t really matter. That certain things where we do kind of constrain, we do kind of serialize things. So in our ledger services for example, that does require strict ordering. So **Kafka** is really good for that.  
+
+
+> **From the resume of Suhail Patel**   
+>   
+> July 2018 – Present  
+> Monzo Bank, London, United Kingdom  
+> [<https://suhailpatel.com/resume.pdf>]  
+> 
+> - Technical authority on investigating deep race conditions and finding/fixing correctness issues across distributed services and systems (such as Etcd Locking and Cassandra)  
+> - Scaling and improving the core Cassandra cluster to serve over 500,000 queries per second at peak across 600+ keyspaces and 1,700+ tables, far beyond the norm for a typical Cassandra cluster 
+> 
