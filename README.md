@@ -347,9 +347,10 @@ The Cassandra daemon manages various in-memory and disk-based data structures. C
 
 Sorted String Tables (**SSTables**) provide permanent on-disk storage for Cassandra.  
 When Cassandra writes data, **SSTables** aren’t stored right away. This is because writes are stored in **Memtables** to maximize performance and are only flushed periodically to disk.  
-Row caches and key caches are used to cache frequently accessed data to help with performance. For small tables, the entire table may be cached in memory.  
+Row caches and key caches are used to cache frequently accessed data to help with performance. For small tables, the entire table may be cached in memory. 
 
-![alt text](image.png)  
+![alt text](image-8.png)  
+
 
 _How Cassandra writes data_  
 - [x] When data is written to a node, it is first(not exactly, it is a kind of paral. op.) stored to the commit log so that the write can be recovered if the node fails
@@ -369,7 +370,8 @@ Like writes, the performance of a read depends on the consistency required for t
 This is an example of how requiring strong consistency can affect performance. For each replica contacted during a read, Cassandra needs to perform several steps and combine results from the active **memtable** and potentially multiple **SSTables** as well.  
 
 Figure describes the sequence of operations on each replica node:  
-![alt text](image-2.png)  
+![alt text](image-7.png)  
+
 
 - [x] When querying a replica, the first place to look is in the row cache. If the needed data is available in the row cache, it can be returned immediately
 - [x] Next, Cassandra will check the key cache (if enabled). If the partition key is found in the key cache, Cassandra can use the key to learn where data is stored by reading an in-memory compressed offset map
@@ -424,7 +426,9 @@ public class SkipListMemtable
 Cassandra data is partitioned based on the Token of row's PartitionKey. The token is gerenated using a Hash Function.   
 
 Hashing with the Murmur3Partitioner:  
-![alt text](image-5.png)
+
+![alt text](image-10.png)  
+
 
 Cassandra offers the following partitioners that can be set in the cassandra.yaml file:  
 - [ ] Murmur3Partitioner (default): uniformly distributes data across the cluster based on MurmurHash hash values.
