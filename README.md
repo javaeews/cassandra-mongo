@@ -1,14 +1,26 @@
-# Cassandra & MongoDB
+# Cassandra & MongoDB  
 
-> ***"Mélységes mély a múltnak kútja. Ne mondjuk inkább feneketlennek?"***
+![alt text](image-11.png)  
 
-> ***"MongoDB is good. It works. However, it’s a somewhat specialized tool solving a somewhat specialized problem extremely well. It doesn’t solve all problems. Other problems are better solved with other data storage engines."***
 
-> ***"Because of the way Cassandra is architectured, it's extremely good at certain use cases and extremely bad at others! I have used it in the past in various projects with great success. In particular, we had a project in King where our system had to support around 1,000,000 requests per second from all around the world. Cassandra could handle that without breaking a sweat. Good luck doing that with another database."***
+> ***"Mélységes mély a múltnak kútja. Ne mondjuk inkább feneketlennek?"***  
+
+
+![alt text](image-12.png) 
+
+> ***"MongoDB is good. It works. However, it’s a somewhat specialized tool solving a somewhat specialized problem extremely well. It doesn’t solve all problems. Other problems are better solved with other data storage engines."***  
+
+ 
+![alt text](image-13.png)  
+> ***"Because of the way Cassandra is architectured, it's extremely good at certain use cases and extremely bad at others! I have used it in the past in various projects with great success. In particular, we had a project in King where our system had to support around 1,000,000 requests per second from all around the world. Cassandra could handle that without breaking a sweat. Good luck doing that with another database."***  
+
+![alt text](image-14.png)  
+From: <https://www.redwolf.in>  
 
 > ***"With great power there must also come great responsibility" is a proverb popularized by Spider-Man in Marvel comics, films, and related media. One of the pain points of Cassandra is the fact that it needs careful maintenance. You need to have a good understanding of how Cassandra works internally. You need to maintain your data integrity and consistency. This requires analysing your cluster topology and running repair operations frequently.*** 
 
-## Zipped
+## Zipped  
+![alt text](image-15.png)  
 
  - [ ] Apache Cassandra® is a free and open-source, distributed, wide column store, NoSQL database management system written in Java designed to handle large amounts of data across many commodity servers, providing high availability with no single point of failure.
  A Cassandra cluster is made up of multiple nodes. Cassandra nodes typically run on Linux® ​​and the only requirement to participate in a cluster is that the nodes are able to communicate with one another via a few well-known TCP/IP ports.
@@ -17,17 +29,18 @@
 
 ## Snippets
 
->    **Document-oriented** & **Wide column store** 
+>    **Document-oriented** & **Wide column store**  
+>    
 >    **scooter** & **car**
 
 
 >  **..., or write your own**
  
 
-
+![alt text](image-16.png)  
 ## Előtörténet, hogyan alakultak ki
 ### Cassandra
-
+![alt text](image-17.png)  
 > - In Greek mythology was a Trojan priestess (papnő)
 > - Because of her beauty Apollo granted her the ability of prophecy but refusing Apollo, he put a curse on her so that all of her predictions
 > would not be believed
@@ -81,7 +94,8 @@ Published: combination of the Server Side Public License and the Apache License
  - [ ] Telematics: IOT for cars and trucks
  - [ ] Email envelopes—not the contents
 	
-
+![alt text](image-18.png)  
+Forrás: <https://www.cflowapps.com/bpm-healthcare>  
 #### Healthcare
 The healthcare industry deals with large volumes of sensitive patient data, including electronic health records (EHRs), medical images, and other healthcare-related data. 
 Ensuring that this data is secure, available, and easily accessible is essential for providing quality patient care.
