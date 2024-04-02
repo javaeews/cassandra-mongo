@@ -5,6 +5,10 @@
 
 > ***"Mélységes mély a múltnak kútja. Ne mondjuk inkább feneketlennek?"***  
 
+## Mi az igazság?! Avagy mit gondol az "utca" embere..
+Még mielőtt bármerre is elindultam volna eme anyag összeállítása során, érdekelt, csak úgy "játékon kívül", hogy mire is bölcs használni ezt a két NoSQL adatbázist. Lehet-e, van-e értelme egyáltalán "nyertest" keresni, vagy mindkettő alapból már vesztesként indul velem ezen az úton? Esetleg mindkettő lehet győztes a maga kategóriájában?  
+Intuitív arra gondoltam, ezekre a kérdésekre fórumok sárdobáló szálai közé merészkedve találhatok pro és kontra érveket. Több hiteles hozzászólással is találkoztam, most a teljesség igénye nélkül ezt a kettőt emelném ki:  
+
 
 ![alt text](image-12.png) 
 
@@ -19,8 +23,14 @@ From: <https://www.redwolf.in>
 
 > ***"With great power there must also come great responsibility" is a proverb popularized by Spider-Man in Marvel comics, films, and related media. One of the pain points of Cassandra is the fact that it needs careful maintenance. You need to have a good understanding of how Cassandra works internally. You need to maintain your data integrity and consistency. This requires analysing your cluster topology and running repair operations frequently.*** 
 
+És ha tömör és rövid akarnék lenni, ezen a ponton meg is köszönném a figyelmet és nyugodt szívvel konstatálnám, hogy a lényeget átadtam..  
+Ugyanakkor ha a két címszereplőt teljesen mellékvágányra teszem a végső cél tekintetében, azt gondolom legitim élnem azzal a párhuzammal amit hallunk eleget:  
+- [ ] Az iskolában nem feltétlenül csak egy-egy konkrét eszköz, technológia megismertetése lenne a cél, sokkal inkább egy új, magasabb szintű, bölcsebb látásmód kialakítása a diákokban  
+- [ ] Összeállítva ezt az anyagot rengeteg olyan szál került utamba, amelyeket egyesével felgöngyölítve és elindulva rajtuk, egy jelen témától viszonylag független és hasznos tudáshalmazra leltem.
+
 ## Zipped  
 ![alt text](image-15.png)  
+Az ismert fogalmakat használva mondjuk azért ki nagyon tömören kik is voltak társaim az úton:  
 
  - [ ] Apache Cassandra® is a free and open-source, distributed, wide column store, NoSQL database management system written in Java designed to handle large amounts of data across many commodity servers, providing high availability with no single point of failure.
  A Cassandra cluster is made up of multiple nodes. Cassandra nodes typically run on Linux® ​​and the only requirement to participate in a cluster is that the nodes are able to communicate with one another via a few well-known TCP/IP ports.
@@ -33,8 +43,13 @@ From: <https://www.redwolf.in>
 >    
 >    **scooter** & **car**
 
+_Bevallom, viszonylag sok idő kellett a felismerésig:_  
+- [ ] Akármekkora ellentmondásnak is tűnik, de mind a Cassandra, mind a MongoDB motorházteteje alatt megdöbbentően hasonló építőelemeket és koncepciókat lehet találni. Főleg, mióta paraméterezhető MongoDB oldalról a használt adattárolási koncepció, azon belül is az alapértelmezett tárolómotor a WiredTiger lett. Előre azért annyit elárulok, hogy szervezeti szinten közösek az ősök (MongoDB/WiredTiger) mégis valamilyen szinten azért elég független is tud lenni a kettő egymástól. Csak egy egyszerű példa, hogy maga a WiredTiger támogat BTree és LSM tree adatszerkezeti alapokon nyugvó tárolást, jelen pillanatban ha a WiredTigert MongoDB-be integrálva használjuk, elméletileg nincs meg ez a paraméterezési lehetőségünk.  
 
->  **..., or write your own**
+
+>  **..., or write your own**  
+- [ ] Ez a kifejezés annyiszor jött szembe velem különböző dokumentációkat olvasva, hogy bátran merem állítani, a legnagyobb pozitívumok közé tartozik főleg Cassandra oldalról, hogy gyakorlatilag minden komponens működését a saját igényeinkre szabhatjuk. Ha belegondolunk, itt megint felötlik sokunkban a fenti mondás: ez azért hatalmas felelősséggel is jár..    
+
  
 ## Előszó a Cassandrához
 
@@ -61,11 +76,10 @@ distributed key-value store which runs – We run it in memory.
 
 ### Cassandra
 ![alt text](image-17.png)  
-> - In Greek mythology was a Trojan priestess (papnő)
-> - Because of her beauty Apollo granted her the ability of prophecy but refusing Apollo, he put a curse on her so that all of her predictions
-> would not be believed
-> - Indicate a person whose accurate prophecies are not believed
-> - Cassandra is the cursed (átok által sújtott) Oracle (jós)
+> - Cassandra a görög mitológiában egy Trójai papnő  
+> - Szépsége okán Apollo megadta neki a prófétálás képességét, azonban elutasította Apollo eme ajándékát, ő átkot bocsátott Cassandrára mely szerint egyetlen jóslatának sem fog hinni senki  
+> - Mint jelző, olyan személyeket titulálnak Cassandrának, akik jövendőmondásai teljesen hiteltelennek hatnak mások szemében, mégis élesek és pontosak
+> - Cassandra lényegében egy átok által sújtott Jós, más néven Oracle. Ennek egyértelmű célzási szándéka is van.  
 
 			
 Avinash Lakshman (Amazon's Dynamo), Prashant Malik  
