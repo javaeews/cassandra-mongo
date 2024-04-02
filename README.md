@@ -677,7 +677,9 @@ in memory and to the commit log on disk before they are acknowledged as a succes
 - [ ] Crash/server failure before the memtables are flushed to disk:   
 the commit log is replayed on restart to recover any lost writes
 		
-### MongoDB
+### MongoDB  
+![alt text](image-19.png)  
+
 - [ ] Except schema operations, WiredTiger performs all the read and write operations within a transaction
 - [ ] If the user doesn't explicitly begin a transaction, WiredTiger will automatically create a transaction for the user's operation
 - [ ] One transaction/session at a time & that must complete before another transaction can be started
@@ -690,13 +692,23 @@ the commit log is replayed on restart to recover any lost writes
 *There is another case that atomicity may be violated if a transaction operates..  
 				
 ##### ISOLATION
-WiredTiger supports three isolation levels:  
+Three isolation models are supported in WiredTiger, from weaker to stronger:  
 
--**read uncommitted** (able to see updates done by all the existing transactions, including the concurrent ones)
--**read committed** (able to see updates done by other transactions that have been committed when the reading happens)
--**snapshot** [default] (able to see updates done by other transactions that are committed before it starts)   
-*write operations -> the only supported  
-*guarantees repeated reads -> same result except: in one scenario using timestamps  
+- [ ] **read-uncommitted:** Transactions can see changes made by other transactions before those transactions are committed. Dirty reads, non-repeatable reads and phantoms are possible.  
+- [ ] **read-committed:** Transactions cannot see changes made by other transactions before those transactions are committed. Dirty reads are not possible; non-repeatable reads and phantoms are possible. Committed changes from concurrent transactions become visible periodically during the lifecycle of the transaction.  
+- [x] **snapshot:** Transactions read the versions of records committed before the transaction started. Dirty reads and non-repeatable reads are not possible; _phantoms are possible_. Snapshot isolation is the default isolation level, and all updates must be done using snapshot isolation.  
+
+![alt text](image-21.png)  
+
+> "A phantom read anomália akkor történik, amikor egy tranzakcióban kétszer selectelünk egy tartományt valamilyen where feltétel szerint, és a két select között egy másik tranzakció sikeresen beilleszt vagy eltávolít rekordokat abból a tartományból, ami megfelel a where feltételnek, így az első select eredménye valójában érvénytelenné válik. Ez az alkalmazás számára csak akkor probléma, ha ezen leválogatás szerint akarunk döntést hozni. Azok az olvasások, amik pl. PK alapján történnek immunisak erre az anomáliára."  
+
+
+Snapshot isolation is a strong guarantee, but does not always guarantee behavior equivalent to a single-threaded execution of the transactions. (The slightly stronger model that does is known as serializable isolation.) Given two concurrent transactions T1 and T2 running under snapshot isolation, if T1 reads data items updated by T2 and T2 reads data items updated by T1, but the data they update does not overlap, both may commit. But because each read the data from before they both started, not the other's output, the execution is not equivalent to either running strictly before the other and the resulting state may be one that no serial execution could produce. This behavior is called **write skew**.  
+
+![alt text](image-20.png)  
+
+> "Mind Alice és Bob olvass a post és post_details táblákat. Bob módosítja a címet, de mivel már ő a szerzője a korábbi módosításnak is, így a post_details updatet kihagyja. Közben Alice is ugyan arra akarja módosítani a címet mint Bob, de ő elvégzi a post_details updatet is mert a korábbi olvasás eredménye szerint nem ő a szerző."  
+
 					  
 ##### VISIBILITY
 To read a key -> traverses all the updates of that key still in memory(linked list with the newest update at the head)   
