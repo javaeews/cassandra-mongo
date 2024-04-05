@@ -764,6 +764,10 @@ _WiredTiger syncs the buffered journal records to disk upon any of the following
 > **Performance is primarily determined by the access pattern. If an operation involves different entities, MongoDB is usually faster because data is de-normalized and doesn't require costly joins between tables. On the other hand, Postgres is more capable of handling complex queries thanks to SQL and its sophisticated query optimizer.**  
 
 
+[<https://www.bytebase.com/blog/postgres-vs-mongodb>]  
+
+
+
 
 ![alt text](image-6.png)
 
@@ -858,7 +862,7 @@ the commit log is replayed on restart to recover any lost writes
 ### MongoDB  
 ![alt text](image-19.png)  
 
-> **MongoDB was known to be less reliable because it didn't support ACID transaction semantics in the early days. This has changed since they acquired WiredTiger and use its WiredTiger storage engine. Today, from the transaction perspective, MongoDB is as solid as Postgres.**  
+> **MongoDB was known to be less reliable because it didn't support ACID transaction semantics in the early days. This has changed since they acquired WiredTiger and use its WiredTiger storage engine. Today, from the transaction perspective, MongoDB is as solid as Postgres.**  [<https://www.bytebase.com/blog/postgres-vs-mongodb>]
 
 
 
