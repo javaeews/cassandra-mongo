@@ -14,6 +14,11 @@ Intuitív arra gondoltam, ezekre a kérdésekre fórumok sárdobáló szálai k�
 
 > ***"MongoDB is good. It works. However, it’s a somewhat specialized tool solving a somewhat specialized problem extremely well. It doesn’t solve all problems. Other problems are better solved with other data storage engines."***  
 
+> ***"A very observant person could also point out that Facebook uses MySQL in a way that isn't too dissimilar sharding a NoSQL database and leveraging Memcache on top of it"***  
+
+> ***"Basically, whenever you see something being "more scalable", "100 times faster" or anything like that, it's usually by sacrificing other types of operations, and/or making data operations far less safe."***  
+
+
  
 ![alt text](image-13.png)  
 > ***"Because of the way Cassandra is architectured, it's extremely good at certain use cases and extremely bad at others! I have used it in the past in various projects with great success. In particular, we had a project in King where our system had to support around 1,000,000 requests per second from all around the world. Cassandra could handle that without breaking a sweat. Good luck doing that with another database."***  
@@ -756,6 +761,8 @@ _WiredTiger syncs the buffered journal records to disk upon any of the following
 - [x] At every 100 milliseconds (storage.journal.commitIntervalMs)  
 - [x] When WiredTiger creates a new journal file(approximately every 100 MB of data)  
 
+> **Performance is primarily determined by the access pattern. If an operation involves different entities, MongoDB is usually faster because data is de-normalized and doesn't require costly joins between tables. On the other hand, Postgres is more capable of handling complex queries thanks to SQL and its sophisticated query optimizer.**  
+
 
 
 ![alt text](image-6.png)
@@ -850,6 +857,10 @@ the commit log is replayed on restart to recover any lost writes
 		
 ### MongoDB  
 ![alt text](image-19.png)  
+
+> **MongoDB was known to be less reliable because it didn't support ACID transaction semantics in the early days. This has changed since they acquired WiredTiger and use its WiredTiger storage engine. Today, from the transaction perspective, MongoDB is as solid as Postgres.**  
+
+
 
 - [ ] A write is atomic on the level of a single document, even if the operation modifies multiple embedded documents within a single document
 - [ ] When a single write operation modifies multiple documents, the operation as a whole is **not** atomic  
@@ -948,6 +959,12 @@ double capacity/throughput -> double the number of nodes
 This linear scalability applies essentially indefinitely  
 has become one of Cassandra’s key strengths  
 	
+### MongoDB
+> **MongoDB scales out, while Postgres scales up. MongoDB is a distributed database supporting automatic sharding. For Postgres, people usually scale up the single node postgres first and defer the sharding solution as late as possible. Of course, sharding Postgres is doable.**  
+
+
+
+
 
 ## Érdekességek Cassandra oldalról
 
