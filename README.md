@@ -587,6 +587,16 @@ Supports pluggable storage engines -> utilizes memory differently
 	Create checkpoints -> write the snapshot data to disk  
 	At every checkpoint interval (Def. 60 sec), MongoDB flushes the changes in the cache to their respective data files  
 
+
+_WiredTiger syncs the buffered journal records to disk upon any of the following conditions:_  
+
+- [x] Read operations performed as part of causally consistent sessions  
+- [x] If a write operation includes or implies a write concern of j: true.  
+- [x] At every 100 milliseconds (storage.journal.commitIntervalMs)  
+- [x] When WiredTiger creates a new journal file(approximately every 100 MB of data)  
+
+
+
 ![alt text](image-6.png)
 
 ```
@@ -680,16 +690,44 @@ the commit log is replayed on restart to recover any lost writes
 ### MongoDB  
 ![alt text](image-19.png)  
 
-- [ ] Except schema operations, WiredTiger performs all the read and write operations within a transaction
-- [ ] If the user doesn't explicitly begin a transaction, WiredTiger will automatically create a transaction for the user's operation
-- [ ] One transaction/session at a time & that must complete before another transaction can be started
-- [ ] Every session is singly-threaded -> all the operations in the transaction -> same thread
+- [ ] A write is atomic on the level of a single document, even if the operation modifies multiple embedded documents within a single document
+- [ ] When a single write operation modifies multiple documents, the operation as a whole is **not** atomic  
+  
+**Multi-Document Transactions**  
+- [ ] For situations that require atomicity of reads and writes to multiple documents, MongoDB supports distributed transactions, including transactions on replica sets and sharded clusters  
+   
+> In most cases, a distributed transaction incurs a greater performance cost over single document writes, and the availability of distributed transactions should not be a replacement for effective schema design. For many scenarios, the denormalized data model (embedded documents and arrays) will continue to be optimal for your data and use cases. That is, for many scenarios, modeling your data appropriately will minimize the need for distributed transactions.  
+
+**Stale Reads**  
+- [ ] Reads inside a transaction are not guaranteed to see writes by other committed transactions or non-transactional writes and can return old(stale) data  
+- [ ] To avoid stale reads inside transactions for a single document, you can use the db.collection.findOneAndUpdate() method  
+  
+ 
+**Causal Consistency**  
+
+- [ ] If an operation logically depends on a preceding operation: _causal relationship_  
+- [ ] With _causally consistent sessions_, MongoDB executes operations in an order that respect their relationships  
+- [ ] To provide causal consistency, MongoDB 3.6+ enables causal consistency in _client sessions_
+- [ ] For causally related operations:  
+1. A client starts a client session
+2. As the client issues reads and writes, includes the session information with each operation
+3. For each read/write associated with the session, MongoDB returns the operation and cluster time
+4. The associated client session tracks these two times
+   
+> **Operations within a causally consistent session are not isolated from operations outside the session. If a concurrent write operation interleaves between the session's write and read operations, the session's read operation may return results that reflect a write operation that occurred after the session's write operation**  
+
+
 			
 ##### ATOMICITY
+- [ ] A write is atomic on the level of a single document, even if the operation modifies multiple embedded documents within a single document
 - [ ] All write operations in memory 
 - [ ] Will not be written to disk until the entire transaction is committed -> size of the transaction must fit in memory  
 *There is one case that atomicity of transactions is not honored..  
-*There is another case that atomicity may be violated if a transaction operates..  
+*There is another case that atomicity may be violated if a transaction operates.. 
+
+- [ ] When a transaction writes to multiple shards, not all outside read operations need to wait for the result of the committed transaction to be visible across the shards. For example, if a transaction is committed and write 1 is visible on shard A but write 2 is not yet visible on shard B, an outside read at read concern "local" can read the results of write 1 without seeing write 2.  
+
+
 				
 ##### ISOLATION
 Three isolation models are supported in WiredTiger, from weaker to stronger:  
@@ -727,11 +765,8 @@ Prepared Transactions:
 					before rollback/commit phase  
 				After prepare -> no more read/write on the transaction  
 				A two-phase distributed transaction algorithm can rely on the prepared state to reach consensus among all the nodes for committing  
-
-Folytatás innen: https://source.wiredtiger.com/develop/arch-timestamp.html  
-Illetve ez is jó lenne még hozzá, ha belefér: https://www.mongodb.com/docs/manual/core/transactions-production-consideration/#outside-reads-during-commit  
+ 
 			
-
 			
 ## Isolation/locking mechanikák
 ### Cassandra	
