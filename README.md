@@ -334,7 +334,168 @@ Java Driver: official MongoDB driver for synchronous Java applications
 <https://github.com/mongodb/mongo-java-driver>
 
 Reactive Streams Driver: asynchronous stream processing  
-			
+
+**Callback API vs Core API**  
+
+- [ ] Callback API  
+
+1. Starts a transaction  
+2. Executes the specified operations  
+3. Commits or aborts on error 
+
+> Automatically incorporates error handling logic for TransientTransactionError and UnknownTransactionCommitResult  
+
+
+
+- [ ] Core API:
+
+* Requires explicit call to start the transaction and commit the transaction  
+* Does not incorporate error handling logic for TransientTransactionError and UnknownTransactionCommitResult  
+* Instead provides the flexibility to incorporate custom error handling for these errors  
+
+
+**Example (uses the new callback API)**  
+
+
+```
+
+/*
+For a replica set, include the replica set name and a seedlist of the members in the URI string; e.g.
+String uri = "mongodb://mongodb0.example.com:27017,mongodb1.example.com:27017/admin?replicaSet=myRepl";
+For a sharded cluster, connect to the mongos instances; e.g.
+String uri = "mongodb://mongos0.example.com:27017,mongos1.example.com:27017:27017/admin";
+*/
+
+final MongoClient client = MongoClients.create(uri);
+
+/*
+   Create collections.
+*/
+
+client.getDatabase("mydb1").getCollection("foo")
+      .withWriteConcern(WriteConcern.MAJORITY).insertOne( new Document("abc", 0));
+client.getDatabase("mydb2").getCollection("bar")
+      .withWriteConcern(WriteConcern.MAJORITY).insertOne( new Document("xyz", 0));
+
+/* Step 1: Start a client session. */
+
+final ClientSession clientSession = client.startSession();
+
+/* Step 2: Optional. Define options to use for the transaction. */
+
+TransactionOptions txnOptions = TransactionOptions.builder()
+      .readPreference(ReadPreference.primary())
+      .readConcern(ReadConcern.LOCAL)
+      .writeConcern(WriteConcern.MAJORITY)
+      .build();
+
+/* Step 3: Define the sequence of operations to perform inside the transactions. */
+
+TransactionBody txnBody = new TransactionBody<String>() {
+   public String execute() {
+      MongoCollection<Document> coll1 = client.getDatabase("mydb1").getCollection("foo");
+      MongoCollection<Document> coll2 = client.getDatabase("mydb2").getCollection("bar");
+
+      /*
+         Important:: You must pass the session to the operations..
+         */
+
+      coll1.insertOne(clientSession, new Document("abc", 1));
+      coll2.insertOne(clientSession, new Document("xyz", 999));
+
+      return "Inserted into collections in different databases";
+   }
+};
+try {
+   /*
+      Step 4: Use .withTransaction() to start a transaction,
+      execute the callback, and commit (or abort on error).
+   */
+
+   clientSession.withTransaction(txnBody, txnOptions);
+} catch (RuntimeException e) {
+   // some error handling
+} finally {
+   clientSession.close();
+}
+
+
+```  
+
+**Example (uses the core API)**  
+
+```
+
+
+void runTransactionWithRetry(Runnable transactional) {
+    while (true) {
+        try {
+            transactional.run();
+            break;
+        } catch (MongoException e) {
+            System.out.println("Transaction aborted. Caught exception during transaction.");
+
+            if (e.hasErrorLabel(MongoException.TRANSIENT_TRANSACTION_ERROR_LABEL)) {
+                System.out.println("TransientTransactionError, aborting transaction and retrying ...");
+                continue;
+            } else {
+                throw e;
+            }
+        }
+    }
+}
+
+void commitWithRetry(ClientSession clientSession) {
+    while (true) {
+        try {
+            clientSession.commitTransaction();
+            System.out.println("Transaction committed");
+            break;
+        } catch (MongoException e) {
+            // can retry commit
+            if (e.hasErrorLabel(MongoException.UNKNOWN_TRANSACTION_COMMIT_RESULT_LABEL)) {
+                System.out.println("UnknownTransactionCommitResult, retrying commit operation ...");
+                continue;
+            } else {
+                System.out.println("Exception during commit ...");
+                throw e;
+            }
+        }
+    }
+}
+
+void updateEmployeeInfo() {
+
+    MongoCollection<Document> employeesCollection = client.getDatabase("hr").getCollection("employees");
+    MongoCollection<Document> eventsCollection = client.getDatabase("reporting").getCollection("events");
+
+    TransactionOptions txnOptions = TransactionOptions.builder()
+            .readPreference(ReadPreference.primary())
+            .readConcern(ReadConcern.MAJORITY)
+            .writeConcern(WriteConcern.MAJORITY)
+            .build();
+
+    try (ClientSession clientSession = client.startSession()) {
+        clientSession.startTransaction(txnOptions);
+
+        employeesCollection.updateOne(clientSession,
+                Filters.eq("employee", 3),
+                Updates.set("status", "Inactive"));
+        eventsCollection.insertOne(clientSession,
+                new Document("employee", 3).append("status", new Document("new", "Inactive").append("old", "Active")));
+
+        commitWithRetry(clientSession);
+    }
+}
+
+
+void updateEmployeeInfoWithRetry() {
+    runTransactionWithRetry(this::updateEmployeeInfo);
+}
+
+```  
+
+
 #### localThresholdMS:
 When communicating with multiple instances of MongoDB in a replica set, the driver will only send requests to a server whose response time is less than or equal to the server with the fastest response time plus the local threshold, in milliseconds.  
 Default: 15  
