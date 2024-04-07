@@ -826,6 +826,27 @@ INSERT into transaction.credit_card_transactions (credit_card_no, transaction_ti
 SELECT * FROM transaction.credit_card_transactions;
 ```		
 
+_A more realistic example:_  
+
+
+![alt text](image-22.png)  
+
+- [ ] At time series: common to define a TTL
+- [ ] Compaction strategy can make huge differences, have to be carefool: CPU cost!
+- [ ] Allows to compact only windows of data, fairly common pattern  
+
+> **Good, but.. not the best on long term**  
+
+- [ ] Putting everything to a single partition: huge mistake when dealing with massive time series    
+- [ ] You can end up unbounded partitions
+- [ ] So seems great for a few month, but.. when you end with 100G-s of partition size
+
+![alt text](image-23.png)  
+> **Add a time component to the partition key..**  
+
+
+
+
 ## Tranzakció támogatás
 ### Cassandra
 - [ ] Atomic, isolated, durable transactions. With restrictions.. 
