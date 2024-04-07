@@ -832,7 +832,7 @@ _A more realistic example:_
 ![alt text](image-22.png)  
 
 - [ ] At time series: common to define a TTL
-- [ ] Compaction strategy can make huge differences, have to be carefool: CPU cost!
+- [ ] Compaction strategy can make huge differences, have to be careful: CPU cost!
 - [ ] Allows to compact only windows of data, fairly common pattern  
 
 > **Good, but.. not the best on long term**  
