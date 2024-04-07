@@ -810,7 +810,14 @@ _WiredTiger syncs the buffered journal records to disk upon any of the following
 - <https://issues.apache.org/jira/browse/CASSANDRA-16453>  
 - <https://cassandra.apache.org/_/blog/Harry-an-Open-Source-Fuzz-Testing-and-Verification-Tool-for-Apache-Cassandra.html>  
 			
-		
+**Performance testing:**  
+- [x] cassandra-stress
+- [x] tlp-stress
+- [x] nosqlbench  
+
+
+
+
 			
 ## Lekérdező nyelv
 ### Cassandra
