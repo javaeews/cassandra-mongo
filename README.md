@@ -834,7 +834,7 @@ SELECT * FROM transaction.credit_card_transactions;
 ```		
 
 _A more realistic example:_  
-
+[From Jon Haddad: Massively Scalable Time Series with Apache Cassandra]
 
 ![alt text](image-22.png)  
 
@@ -850,8 +850,20 @@ _A more realistic example:_
 
 ![alt text](image-23.png)  
 > **Add a time component to the partition key..**  
+- [ ] Now we have multiple partitions per time series
+- [ ] Each day: own partition
+- [ ] So a gold rule can be 1-10K rows/partition (Remember: the number mentioned at the rules of a good partition: Up to ~100k rows in a partition [DataStax recommends])
+- [ ] Becomes external cache friendly: putting an external layer over Cassandra, e.g. Memcached: Cheaper and can put off load from Cassandra
 
+![alt text](image-24.png)  
+> **Going a step further: New index table/month**  
 
+- [ ] Seems strange: duplicating data, but:
+- [ ] No need for TTL: just drop old data: more dynamic
+- [ ] Now we are using tables for time windows: TimeWindowCompactionStrategy? Not sure the best when dealing with huge amount of data
+- [ ] Move it somewhere cheaper, like object store
+
+_Other more realistic example:_   
 From [<https://github.com/openzipkin/zipkin/blob/master/zipkin-storage/cassandra/src/test/resources/zipkin2-test-schema.cql>]  
 
 
