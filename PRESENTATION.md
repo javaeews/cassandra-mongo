@@ -143,7 +143,7 @@ Forrás: <https://www.cflowapps.com/bpm-healthcare>
 
 
 #### Credit Card info
-Credit card information is a prefect use case for Cassandra as again we can take advantage of the wide rows to can easily view last n transactions. These transactions can be used to analyse fraud and even locate criminal activities around globe.
+Credit card transactions: analyse fraud + locate criminal activities  
 ```
 CREATE KEYSPACE IF NOT EXISTS transaction WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };
 
@@ -166,15 +166,20 @@ INSERT into transaction.credit_card_transactions (credit_card_no, transaction_ti
 
 ```
 	
-We can now check for common patterns which can show criminal activity. So let’s say that we know that 1000 customer’s credit cards have been using fraudulently
-in the last day. We can check each of the credit cards for any commonalities. Let’s say that each of them have visited a certain food chain in the City of London. 
-It would be possible to put  that merchant in a grey list for all future transactions. Also it may be that someone has been skimming the cards to create fake ones.
+ - [ ] Now check for common patterns which can show criminal activity:   
+   - 1000 customer’s credit cards have been using fraudulently in the last day 
+   - Check for common patterns 
+   - E.g. each of them visited a food chain in London  
+   - Put that merchant in a grey list
+   - What if someone has been skimming the cards to create fake ones?  
+
 
 
 #### Balance updating
-When we are processing usage of services such as utilities, credit cards, mobiles we don’t need to always update the users account balance at the same time as every transaction happens.
-The solution is to update the balance at regular intervals to incorporate the new transactions.
-For example, lets say we have 2 tables, 1 to hold the balance for a users account and a table for all transactions for a user. If we take the credit card example, we have
+ - [ ] Processing usage of services (credit cards, mobiles) : don’t update the users account as every transaction
+ - [ ] Update only at regular intervals  
+ - [ ] Having 2 tables (balances for a users account + for all it's transactions)
+
 
 ```
 CREATE TABLE credit_card_transactions (
@@ -193,49 +198,56 @@ CREATE TABLE credit_card_transactions (
 CREATE TABLE transaction.account_balance (account_no text,credit_card_no text,last_updated timestamp,balance double,PRIMARY KEY (account_no));
 ```
 
-When we run the update balance process at regular intervals, the **last_updated** timestamp in the account_balance will act as the trigger for getting all the latest transactions to included in the new balance.  
-
-So, lets imagine that every night at midnight we run an update process to update the balance of all credit cards. First we will look at the **last_updated** timestamp for the credit_card and use this in our WHERE clause to get all transactions for the credit card after that time.  
+ - [ ] Running the update balance process: the **account_balance.last_updated** ts: transactions to included in the new balance 
 
 ```
 SELECT credit_card_no, last_udpated FROM account_balance WHERE account_no = 1001;
 ```
 
-In theory we can have multiple cards per account but we will just use 1 for this example. We can now use the credit_card_no AND **last_updated** values from the above query to get the latest transactions to be added to the balance.
+ - [ ] Use credit_card_no AND **last_updated** to get the latest transactions to be added  
+
 
 ```
 SELECT amount FROM credit_card_transactions WHERE credit_card_no = <credit_card_no> AND transaction_time > <last_updated>
 ```
 
-To finish the update process we need to update the user’s balance with the old balance summed with the new transactions for that day. The important part of this is that we need to update the **last_updated** time to be the last transaction that we have processed.
-So if we have the following transactions that were processed for that day:  
+ - [ ] Update balance: old balance + new transactions for that day. 
+ - [ ] Update **last_updated** :  last processed transaction
+ - [ ] Have the following transactions that were processed for that day:  
 
 ![](https://cassandrastuff.files.wordpress.com/2013/12/creditcardday1.jpg)  
 
-the **last_updated** time that will be updated in the accounts table will be 2013-10-12 23:00:00. 
+ - [ ]  **accounts.last_updated** will be 2013-10-12 23:00:00  
 
-This will ensure the entire process is idempotent so if there is any problem we can run the process again to get the same answer.  
+ - [ ] Ensures the entire process is idempotent (we can run the process again to get the same answer)  
+
 
 
 #### ING Bank 
-- [ ] Needs to manage vast amounts of customer data, including account information, transaction history, and personal details
+- [ ] Vast amounts of customer data (account information, transaction history, personal details..)  
 
-> Apache Cassandra’s distributed architecture allows ING Bank to store and retrieve customer data efficiently and reliably across all web and mobile applications. It provides a flexible data model that can accommodate the evolving needs of the bank’s applications.
+
+> Cassandra’s distributed architecture allows to store/retrieve data efficiently and reliably across all web and mobile applications. Provides flexible data model: accommodate the evolving needs.  
 > 
-> ING Bank also built their messaging platform with Apache Cassandra. This allows them to process real-time events and ensures guaranteed once delivery of all messages, enabling them to build applications that react quickly to changing market conditions and customer interactions.  [<https://planetcassandra.org/usecases/>]  
+> ING also built their messaging platform with Cassandra. Allows to process real-time events + ensures once delivery  [<https://planetcassandra.org/usecases/>]  
+
 
 #### Monzo(~Revolut):
 - [ ] Cassandra as a Core Database [PM: Bátor vállalkozás] 
 
 > "We made the decision early on to use Cassandra as our main database for services, with each service operating under its own keyspace. This strict isolation between keyspaces meant that a service could not directly read data from another service."
 
-_Handling failures on Cassandra_
-- [ ] Can exist inconsistencies when reading the data from different nodes, which can be problematic for a banking service that requires consistency. 
+_Failures on Cassandra.._
+- [ ] Inconsistencies when reading from different nodes 
+- [ ] Problematic for a banking service..  
+
 
 > To address this issue, the team has been using a separate service running continuously in the background that is responsible for detecting and resolving inconsistent data states. This service can either flag the issue for further investigation or even automate the correction process. 
 
 _Monzo experienced an incident in July 2019_ [<https://monzo.com/blog/2019/09/08/why-monzo-wasnt-working-on-july-29th#article>]  
-- [ ] A configuration error in Cassandra during a scale-up operation forced a stop to all writes and reads to the cluster. 
+- [ ] Configuration error during a scale-up operation 
+- [ ] Forced a stop to all writes and reads to the cluster  
+
 
 > This event set off a chain reaction of improvements spanning multiple years to enhance the operational capacity of the database systems. Since then, Monzo has invested in observability, deepening the understanding of Cassandra and other production systems, and we are more confident in all operational matters through runbooks and production practices.
 	
