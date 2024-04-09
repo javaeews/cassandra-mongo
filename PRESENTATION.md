@@ -240,16 +240,17 @@ SELECT amount FROM credit_card_transactions WHERE credit_card_no = <credit_card_
 _Failures on Cassandra.._
 - [ ] Inconsistencies when reading from different nodes 
 - [ ] Problematic for a banking service..  
+- [ ] Background service running continuously: detects/resolves inconsistent data states
 
-
-> To address this issue, the team has been using a separate service running continuously in the background that is responsible for detecting and resolving inconsistent data states. This service can either flag the issue for further investigation or even automate the correction process. 
 
 _Monzo experienced an incident in July 2019_ [<https://monzo.com/blog/2019/09/08/why-monzo-wasnt-working-on-july-29th#article>]  
 - [ ] Configuration error during a scale-up operation 
 - [ ] Forced a stop to all writes and reads to the cluster  
 
-
-> This event set off a chain reaction of improvements spanning multiple years to enhance the operational capacity of the database systems. Since then, Monzo has invested in observability, deepening the understanding of Cassandra and other production systems, and we are more confident in all operational matters through runbooks and production practices.
+- [ ] Reaction: improvements spanning multiple years to enhance the operational capacity of the database systems 
+- [ ] Monzo has invested in observability, deepening the understanding of Cassandra and other production systems
+- [ ] Runbooks: “how-to” guide for completing a commonly repeated task or procedure  
+- [ ] Production practices  
 	
 	
 ## Driver beállítások (timoutok, failover)
@@ -270,10 +271,7 @@ DataStax Java Driver for Apache Cassandra®
 ##### Control connection - dedicated DriverChannel instance to:
 > - listen for server-side protocol events(topology events (NEW_NODE, REMOVED_NODE) and status events (UP, DOWN) )
 > - way to query system tables
-					
-##### Metadata manager 
-> -  responsible for maintaining the contents of `session.getMetadata()`
-> -  follows the confined inner class pattern to ensure that all refreshes are applied serially, from a single admin thread
+
 				
 ##### Topology monitor 
 > Abstracts how we get information about nodes in the cluster
@@ -286,51 +284,61 @@ DataStax Java Driver for Apache Cassandra®
 - rethrow  
 - ignore  
 
-When a query fails, it sometimes makes sense to retry it: the error might be temporary, or the query might work on a different node.  
-The driver uses a retry policy to determine when and how to retry.  
+When a query fails: 
+ - [ ] Sometimes makes sense to retry it: 
+    - error might be temporary  
+    - query might work on a different node  
 
-The driver ships with two retry policies:  
+ - [ ] Driver uses a retry policy: determine when and how to retry  
+ - [ ] Two retry policies:   
 
-- [ ] **DefaultRetryPolicy** (should be preferred in most cases as it only retries when it is perfectly safe to do so, and when the chances of success are high enough to warrant a retry)
-- [ ] **ConsistencyDowngradingRetryPolicy** (In summary: only use this retry policy if you understand the consequences..)
-- [ ] Use your own: specifying the name of a class that implements RetryPolicy
+  - **DefaultRetryPolicy** (should be preferred in most cases as it only retries when it is perfectly safe to do so)  
+  - **ConsistencyDowngradingRetryPolicy** (use this policy if you understand the consequences..)  
+  - Use your own: specifying the name of a class that implements RetryPolicy  
 				
-The policy has several methods that cover different error cases  
-Each method returns a RetryVerdict (provides the driver with a RetryDecision to indicate what to do next)  
-**Four possible retry decisions:**
+ - [ ] The policy has several methods that cover different error cases 
+ - [ ] Each method returns a RetryVerdict: provides the driver with a RetryDecision to indicate what to do next  
+ 
+**Possible retry decisions:**  
 - retry on the same node  
 - retry on the next node in the query plan for this statement  
 - rethrow the exception to the user code (as a failed future if using the asynchronous API)  
 - ignore the exception, mark the request as successful, return an empty result set  
 					
-	**Hard-coded rules**
-	cases where retrying is always the right thing -> hard-coded in the driver  
-	 --errors before a network write was attempted (safe to retry: the request wasn’t sent -> driver moves to the next node in the query plan)  
+**Hard-coded rules (in the driver)**  
+ - [ ] Where retrying is always the right thing (errors before a network write was attempted (safe: request wasn’t sent))  
     	- select a node   
 		- borrow a connection from the host’s connection pool   
 		- write the message to the connection  
 						 						 
-	errors that have no chance -> rethrown to the user  
-						-QueryValidationException and any of its subclasses  
-						-FunctionFailureException  
-						-ProtocolError  
+- [ ] Where errors have no chance: rethrown to the user   
+		- QueryValidationException and any of its subclasses  
+		- FunctionFailureException  
+		- ProtocolError  
 
-_Speculative query execution_  
-Sometimes a Cassandra node might be experiencing difficulties (ex: long GC pause) and take longer than usual to reply. Queries sent to that node -> bad latency.  
-One thing we can do-> start a second execution against another node, before the first replied/errored out  
-If that second node replies faster -> response back to the client && cancel the first execution (discarding the response [in flight requests cancellation not supported])  
+
+#### Speculative query execution  
+ - [ ] Sometimes a Cassandra node might be experiencing difficulties (ex: long GC pause) and 
+ - [ ] Takes longer than usual to reply 
+ - [ ] Queries sent to that node -> bad latency  
+ - [ ] One thing we can do: start a second execution against another node, before the first replied/errored out  
+ - [ ] If that second node replies faster -> response back to the client && cancel the first execution 
+ - [ ] In flight requests cancellation not supported: discard the response  
+
+
 				
-Request throttling
-- Pass through(default)  
-- Concurrency-based(Additional requests get enqueued up to the configured limit)    
+#### Request throttling
+ - [ ] Pass through(default)  
+ - [ ] Concurrency-based(Additional requests get enqueued up to the configured limit)    
 					*max-concurrent-requests = 10000  
 					*max-queue-size = 100000  
-- Rate-based  
-					*max-requests-per-second = 5000 (tracks the rate at which requests start, and enqueues when it exceeds the configured threshold)  
-					*max-queue-size = 50000  
-					*drain-interval = 1 millisecond (re-check the rate periodically and dequeues when possible)  
-- write your own :)  
-			
+ - [ ] Rate-based  
+    - max-requests-per-second = 5000 (tracks the rate at which requests start, and enqueues when it exceeds the configured threshold)  
+    - max-queue-size = 50000  
+    - drain-interval = 1 millisecond (re-check the rate periodically and dequeues when possible)  
+ - [ ] write your own..  
+
+
 
 ### Object mapper 
 - [ ] removes boilerplate of writing queries: DAOs to access Apache Cassandra™   
@@ -356,14 +364,11 @@ Reactive Streams Driver: asynchronous stream processing
 
 > Automatically incorporates error handling logic for TransientTransactionError and UnknownTransactionCommitResult  
 
-
-
 - [ ] Core API:
 
 * Requires explicit call to start the transaction and commit the transaction  
 * Does not incorporate error handling logic for TransientTransactionError and UnknownTransactionCommitResult  
 * Instead provides the flexibility to incorporate custom error handling for these errors  
-
 
 **Example (uses the new callback API)**  
 
