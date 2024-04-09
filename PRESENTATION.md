@@ -5,37 +5,33 @@
 
 > ***"Mélységes mély a múltnak kútja. Ne mondjuk inkább feneketlennek?"***  
 
-## Mi az igazság?! Avagy mit gondol az "utca" embere..
-Még mielőtt bármerre is elindultam volna eme anyag összeállítása során, érdekelt, csak úgy "játékon kívül", hogy mire is bölcs használni ezt a két NoSQL adatbázist. Lehet-e, van-e értelme egyáltalán "nyertest" keresni, vagy mindkettő alapból már vesztesként indul velem ezen az úton? Esetleg mindkettő lehet győztes a maga kategóriájában?  
-Intuitív arra gondoltam, ezekre a kérdésekre fórumok sárdobáló szálai közé merészkedve találhatok pro és kontra érveket. Több hiteles hozzászólással is találkoztam, most a teljesség igénye nélkül ezt a kettőt emelném ki:  
-
+## Mi az igazság?! Avagy mit gondolnak a fórumozó emberek..
 
 ![alt text](image-12.png) 
-
 > ***"MongoDB is good. It works. However, it’s a somewhat specialized tool solving a somewhat specialized problem extremely well. It doesn’t solve all problems. Other problems are better solved with other data storage engines."***  
 
 > ***"A very observant person could also point out that Facebook uses MySQL in a way that isn't too dissimilar sharding a NoSQL database and leveraging Memcache on top of it"***  
 
-> ***"Basically, whenever you see something being "more scalable", "100 times faster" or anything like that, it's usually by sacrificing other types of operations, and/or making data operations far less safe."***  
-
-
- 
 ![alt text](image-13.png)  
 > ***"Because of the way Cassandra is architectured, it's extremely good at certain use cases and extremely bad at others! I have used it in the past in various projects with great success. In particular, we had a project in King where our system had to support around 1,000,000 requests per second from all around the world. Cassandra could handle that without breaking a sweat. Good luck doing that with another database."***  
+
+> ***"Basically, whenever you see something being "more scalable", "100 times faster" or anything like that, it's usually by sacrificing other types of operations, and/or making data operations far less safe."***  
 
 ![alt text](image-14.png)  
 From: <https://www.redwolf.in>  
 
-> ***"With great power there must also come great responsibility" is a proverb popularized by Spider-Man in Marvel comics, films, and related media. One of the pain points of Cassandra is the fact that it needs careful maintenance. You need to have a good understanding of how Cassandra works internally. You need to maintain your data integrity and consistency. This requires analysing your cluster topology and running repair operations frequently.*** 
+> ***"With great power there must also come great responsibility"***  
+- [ ] Careful maintenance 
+- [ ] Good understanding of how Cassandra works internally
+- [ ] Maintain your data integrity and consistency 
+- [ ] Analysing your cluster topology and running repair operations frequently
 
-És ha tömör és rövid akarnék lenni, ezen a ponton meg is köszönném a figyelmet és nyugodt szívvel konstatálnám, hogy a lényeget átadtam..  
-Ugyanakkor ha a két címszereplőt teljesen mellékvágányra teszem a végső cél tekintetében, azt gondolom legitim élnem azzal a párhuzammal amit hallunk eleget:  
-- [ ] Az iskolában nem feltétlenül csak egy-egy konkrét eszköz, technológia megismertetése lenne a cél, sokkal inkább egy új, magasabb szintű, bölcsebb látásmód kialakítása a diákokban  
-- [ ] Összeállítva ezt az anyagot rengeteg olyan szál került utamba, amelyeket egyesével felgöngyölítve és elindulva rajtuk, egy jelen témától viszonylag független és hasznos tudáshalmazra leltem.
+## Megjegyzés
+- [ ] Nem feltétlenül csak egy-egy konkrét eszköz  
+- [ ] Jelen témától viszonylag független és hasznos tudáshalmaz is
 
 ## Zipped  
 ![alt text](image-15.png)  
-Az ismert fogalmakat használva mondjuk azért ki nagyon tömören kik is voltak társaim az úton:  
 
  - [ ] Apache Cassandra® is a free and open-source, distributed, wide column store, NoSQL database management system written in Java designed to handle large amounts of data across many commodity servers, providing high availability with no single point of failure.
  A Cassandra cluster is made up of multiple nodes. Cassandra nodes typically run on Linux® ​​and the only requirement to participate in a cluster is that the nodes are able to communicate with one another via a few well-known TCP/IP ports.
@@ -48,31 +44,38 @@ Az ismert fogalmakat használva mondjuk azért ki nagyon tömören kik is voltak
 >    
 >    **scooter** & **car**
 
-_Bevallom, viszonylag sok idő kellett a felismerésig:_  
-- [ ] Akármekkora ellentmondásnak is tűnik, de mind a Cassandra, mind a MongoDB motorházteteje alatt megdöbbentően hasonló építőelemeket és koncepciókat lehet találni. Főleg, mióta paraméterezhető MongoDB oldalról a használt adattárolási koncepció, azon belül is az alapértelmezett tárolómotor a WiredTiger lett. Előre azért annyit elárulok, hogy szervezeti szinten közösek az ősök (MongoDB/WiredTiger) mégis valamilyen szinten azért elég független is tud lenni a kettő egymástól. Csak egy egyszerű példa, hogy maga a WiredTiger támogat BTree és LSM tree adatszerkezeti alapokon nyugvó tárolást, jelen pillanatban ha a WiredTigert MongoDB-be integrálva használjuk, elméletileg nincs meg ez a paraméterezési lehetőségünk.  
+_Sok idő kellett a felismerésig.._  
+- [ ] Hasonló építőelemek és koncepciók, főleg a WiredTiger óta
+- [ ] Szervezeti szinten közösek az ősök (MongoDB/WiredTiger) 
+- [ ] Valamilyen szinten azért függetlenek is
+- [ ] Pl. WiredTiger: BTree + LSM tree  
 
 
 >  **..., or write your own**  
-- [ ] Ez a kifejezés annyiszor jött szembe velem különböző dokumentációkat olvasva, hogy bátran merem állítani, a legnagyobb pozitívumok közé tartozik főleg Cassandra oldalról, hogy gyakorlatilag minden komponens működését a saját igényeinkre szabhatjuk. Ha belegondolunk, itt megint felötlik sokunkban a fenti mondás: ez azért hatalmas felelősséggel is jár..    
+- [ ] Felelősség is  
+   
 
  
 ## Előszó a Cassandrához
 
-- [ ] Nagyon sok idő és nagyon sok helyről származó információ avagy nézőpont megimserése kellett ahhoz, hogy átlássak a világ nyolcadik csodájának beállított Cassandrán..
-- [ ] Eleve van egy Datastaxunk (Astra), ami a teljesen független Cassandrát nagyon erősen tolja és marketingeli. A könnyen elérhető anyagok a Cassandráról beleértve még a fórumok bejegyzéseinek többségét is, erősen át vannak itatva az előbb említett cég érdekeivel.
-- [ ] Jelenleg a Cassandra 5.0-s verziónál járunk, de ne veszítsük szem elől, hogy ez egy BETA1 verzió. Eme verzió egy viszonylag nagy mérföldkőnek tűnik a Cassandra életében, aminek van nyilván egy bumeráng hatása is, hiszen ők maguk hozzák felszínre azokat a gyenge pontokat, amiket az 5.0 orvosolni szeretne. Bő fél éve, még az ACID fogalmat is összekötötték ezzel a verzióval. Egy távolról jött ember számára kecsegtető ezt hallani, de tudjuk, hogy a történelem az élet tanítómestere. 
-- [ ] Utóbbi verziók kezdtek már el támogatni olyan ígéretesnek tűnő feature koszorút, amiben láthattunk pehelysúlyú tranzakciót, kötegelt utasítás végrehajtást és egyéb szép dolgokat, de mára már a napnál is világosabb, hogy gyakorlatilag érdemben senki sem használja őket. Olyan árat kellene értük fizetni, ami alapjaiban törné össze azt a víziót, amit a Cassandra képvisel már a kezdetek óta.
-- [ ] Szintén nagy volt a csábítás, mikor a Cassandra honlapján végigolvastam az esettanulmányok menüpontban összegyűjtött "From startups to the largest enterprises, the world runs on Cassandra" igen hosszú és széles spektrumú beszámolóit.
-- [ ] Ezek közt is van egy hatalmas kakukktojás, a Monzo. Ha nagyon leegyszerűsítem, akkor tekinthetjük egy kisebb Revolutnak is. És ott virít a mondat, hogy elsődleges adatbázisnak a Cassandrát választották. Elsőre kicsit ijesztő és hihetetlen volt, de valóban ez a helyzet. Ahol a tranzakció, mint fogalom is értelmezhetetlen, elkezdünk tárolni ügyfél/pénzügyi adatokat.
-Egyedül egy mutex amit fel tudunk mutatni Cassandra oldalról(row level atomicity), de azért valljuk be, ez sokra nem jogosít fel minket. 
-Elég sok anyagot próbáltam átolvasni, hogy kicsit jobban belelássak a részletekbe és némi kitartás után rábukkantam egy beszélgetés leiratának, ami által azért kicsit jobban beláthattam már a kulisszák mögé.
+- [ ] Átlátni a világ nyolcadik csodáján  
+- [ ] Datastax (Astra)?  Cassandra?  
+- [ ] Jelenleg Cassandra 5.0, de  BETA1 verzió. Eme verzió egy v
+- [ ] Viszonylag nagy mérföldkő
+- [ ] Bumeráng hatás
+- [ ] ACID
+- [ ] Historia est magistra vitae
+- [ ] Pehelysúlyú tranzakció, kötegelt utasítás végrehajtás.. $$$
+- [ ] "From startups to the largest enterprises, the world runs on Cassandra"
+- [ ] Monzo: Tranzakció? +ügyfél/pénzügyi adatok
+- [ ] Mutex, row level atomicity: Ellentmondás..  
 
 > Cassandra doesn’t provide – Doesn’t have kind of acid transactions like that. So you kind of
 need to do that yourself. So we at Monzo, we actually use etcd for that, which is another
 distributed key-value store which runs – We run it in memory.   
 
-- [ ] Szóval Monzóék a józan észnek nem ellentmondva, bizony keményen körülbástyázták Cassandra jósnőnket megfelelő failover, lockolást biztosító és egyéb folyamatokkal.
-Így azért már hihetőbb a teljes kép.  
+- [ ] Failover, locking, etc.
+
 
 
 
@@ -81,10 +84,10 @@ distributed key-value store which runs – We run it in memory.
 
 ### Cassandra
 ![alt text](image-17.png)  
-> - Cassandra a görög mitológiában egy Trójai papnő  
-> - Szépsége okán Apollo megadta neki a prófétálás képességét, azonban elutasította Apollo eme ajándékát, ő átkot bocsátott Cassandrára mely szerint egyetlen jóslatának sem fog hinni senki  
-> - Mint jelző, olyan személyeket titulálnak Cassandrának, akik jövendőmondásai teljesen hiteltelennek hatnak mások szemében, mégis élesek és pontosak
-> - Cassandra lényegében egy átok által sújtott Jós, más néven Oracle. Ennek egyértelmű célzási szándéka is van.  
+> - Trójai papnő  
+> - Apollo: prófétálás képessége
+> - Akik jövendőmondásai teljesen hiteltelennek hatnak mások szemében, de..
+> - Átok által sújtott Jós (Oracle)
 
 			
 Avinash Lakshman (Amazon's Dynamo), Prashant Malik  
@@ -106,47 +109,38 @@ Published: combination of the Server Side Public License and the Apache License
  - [ ] Monzo (~Revolut)
  - [ ] ING Bank
  - [ ] OTP financial transactions 
+ - [ ] Zipkin  
 ### MongoDB
  - [ ] MetLife
- - [ ] Barclays
- - [ ] ADP
  - [ ] UPS
- - [ ] Viacom
  - [ ] New York Times
+
 
 ### Kiegészítés a Cassandra használatát illetően
 
-**The ideal Cassandra application has the following characteristics:**
- - [ ] Writes exceed reads by a large margin
- - [ ] Data is rarely updated and when updates are made they are idempotent
- - [ ] Read Access is by a known primary key
- - [ ] Data can be partitioned via a key that allows the database to be spread evenly across multiple nodes
- - [ ] There is no need for joins or aggregates
+**Ideal Cassandra use-case:**
+ - [ ] Writes >> reads
+ - [ ] Rare, idempotent updates
+ - [ ] Read: by known key(s)
+ - [ ] Evenly partitionable via (a) key(s)
+ - [ ] No join/aggregation
   
-**Some examples of good use cases for Cassandra are:**
- - [ ] Transaction logging: Purchases, test scores, movies watched and movie latest location
- - [ ] Storing time series data (as long as you do your own aggregates)
- - [ ] Tracking pretty much anything including order status, packages etc.
- - [ ] Storing health tracker data
+**Good use cases:**
+ - [ ] Transaction logging  
+ - [ ] Time series
+ - [ ] Tracking data
  - [ ] Weather service history
- - [ ] Internet of things status and event history
+ - [ ] Internet of things status + event history
  - [ ] Telematics: IOT for cars and trucks
- - [ ] Email envelopes—not the contents
+ - [ ] Email envelopes
 	
 ![alt text](image-18.png)  
 Forrás: <https://www.cflowapps.com/bpm-healthcare>  
 #### Healthcare
-The healthcare industry deals with large volumes of sensitive patient data, including electronic health records (EHRs), medical images, and other healthcare-related data. 
-Ensuring that this data is secure, available, and easily accessible is essential for providing quality patient care.
-Cassandra's flexible data model makes it an excellent choice for storing and managing healthcare data. 
-Its ability to handle structured and unstructured data allows for easy integration with a wide range of healthcare applications, such as EHRs, medical 
-imaging systems, and patient monitoring devices. This flexibility also enables healthcare providers to quickly adapt to changing data requirements and new data types.
-In addition, Cassandra's distributed architecture and built-in fault tolerance make it a secure and reliable choice for storing sensitive patient data. 
-Cassandra's peer-to-peer architecture ensures that there is no single point of failure, making it highly resilient in the face of hardware or network failures.
-Cassandra’s ability to handle large amounts of data in real-time is particularly important for applications like patient monitoring, where data needs to be 
-processed and analyzed quickly to provide timely insights into patient health.
-Finally, Cassandra's tunable consistency model allows healthcare providers to choose the level of consistency that best fits their use case. 
-Strong consistency can be used for critical patient data, while eventual consistency can be used for less critical data, such as patient demographics.
+- [ ] Large amounts of data in real-time  
+- [ ] Need to be processed, analyzed quickly: provide timely insights into patient health
+- [ ] Tunable consistency: critical patient data vs less critical data  
+
 
 #### Credit Card info
 Credit card information is a prefect use case for Cassandra as again we can take advantage of the wide rows to can easily view last n transactions. These transactions can be used to analyse fraud and even locate criminal activities around globe.
@@ -623,9 +617,9 @@ One of the biggest challenges that database administrators inevitably run into i
 _Rules of a Good Partition_  
 - [x] Store together what you retrieve together
 - [x] Avoid big partitions  
-	● Up to 2 billion cells per partition  
-	● Up to ~100k rows in a partition  
-	● Up to ~100MB in a Partition   
+	- Up to 2 billion cells per partition  
+	- Up to ~100k rows in a partition  
+	- Up to ~100MB in a Partition   
 - [x] Avoid hot partitions  
 PRIMARY KEY (user_id) vs. PRIMARY KEY ((country), user_id);  
 				
