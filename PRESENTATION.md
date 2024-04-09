@@ -330,8 +330,8 @@ When a query fails:
 #### Request throttling
  - [ ] Pass through(default)  
  - [ ] Concurrency-based(Additional requests get enqueued up to the configured limit)    
-					*max-concurrent-requests = 10000  
-					*max-queue-size = 100000  
+    - max-concurrent-requests = 10000  
+    - max-queue-size = 100000  
  - [ ] Rate-based  
     - max-requests-per-second = 5000 (tracks the rate at which requests start, and enqueues when it exceeds the configured threshold)  
     - max-queue-size = 50000  
@@ -538,82 +538,150 @@ primary: all reads use only the current replica set primary. If unavailable -> e
 Default: primary  
 			
 
-		
 ## Adatok tárolásának módja, formátuma
 #### B-trees
-Data is stored in a sorted manner, facilitating efficient range queries. This organization is akin to keeping books on a shelf in alphabetical order, making it easier to find a sequence of books by a particular author. The sorted nature of B-trees ensures that related data points are located near each other on the storage medium, optimizing the retrieval process. However, as the dataset size exceeds the memory capacity, the system may incur increased disk seeks, impacting performance.
-#### LSM trees
-Designed primarily for write efficiency, encounter challenges in data locality due to their multi-level storage mechanism. Data is dispersed across different levels, each with its own sorting order, which can complicate direct access patterns. Reading data might require aggregating information from multiple levels, akin to searching through several temporary collections to compile a complete set of works by a specific author. To mitigate these challenges, LSM trees employ mechanisms like bloom filters and caching, enhancing the efficiency of read operations despite the inherent complexity of their structure.
-### Cassandra
+ - [ ] Data is stored in a sorted manner (efficient range queries)  
+ - [ ] E.g. keeping books on a shelf in alphabetical order (easier to find a sequence of books by a particular author)   
+ - [ ] The sorted nature: related data points are located near each other on the storage medium (optimizing the retrieval process)    
+ - [ ] Dataset size exceeds the memory capacity: increased disk seeks (impacting performance)  
 
-A good way to understand Cassandra is to look at how clusters are physically deployed. Cassandra clusters are organized into nodes, racks, and data centers.  
+#### LSM trees
+ - [ ] Primarily for write efficiency, 
+ - [ ] Challenges in data locality due to their multi-level storage mechanism 
+ - [ ] Data is dispersed across different levels, each with its own sorting order  
+ - [ ] Can complicate direct access patterns  
+ - [ ] Reading might require aggregating information from multiple levels 
+ - [ ] E.g. searching through several temporary collections to compile a complete set of works by a specific author  
+ - [ ] To help: bloom filters, caching (enhances read efficiency but increases structural complexity..)
+
+### Cassandra
 
 ![alt text](image-1.png)
 
-- [ ] A ​node​ refers to a computer system running an instance of Cassandra. A node can be a physical host, a machine instance in the cloud, or even a Docker container
-- [ ] A ​rack​ refers to a set of Cassandra nodes near one another. A rack can be a physical rack containing nodes connected to a common network switch. In cloud deployments, however, a rack often refers to a collection of machine instances running in the same availability zone
-- [ ] A​ data center​ refers to a collection of logical racks, generally residing in the same building and connected by a reliable network. In cloud deployments, data centers generally map to a cloud region—for example, on AWS, us-west-1, and us-west-2
+- [ ] Node:​ running a Cassandra instance. (physical host, machine instance in the cloud, a Docker container..)  
+- [ ] Rack:​ Cassandra nodes near one another  
+- [ ] Data center:​ logical racks (generally residing in the same building and connected by a reliable network)  
 
-Cassandra typically stores copies of data across multiple data centers to ensure availability, while preferring to route queries to other nodes in the same data center to maximize performance.  
 
 _Logical ring structure_  
-Just as nodes, racks, and data centers describe how Cassandra clusters are physically deployed, the concept of a “ring” is commonly used to explain how data is organized logically.  
-
-To decide where data is stored, the partition key is hashed to determine a token. A token is a 64-bit integer ID ranging from -2^63 to +2^63 that is used to identify each partition. The token value determines which Cassandra nodes the data will reside on.  
 
 ```
 PRIMARY KEY((Partition Key), Clustering Keys) 
+```   
+
+- [ ] Ring: used to explain how data is organized logically 
+- [ ] Where data is stored? 
+- [ ] Partition key is hashed -> token 
+- [ ] Token: 64-bit integer ID ranging from -2^63 to +2^63 that is 
+- [ ] Used to identify each partition   
+- [ ] Determines which Cassandra nodes the data will reside on 
+- [ ] Each node in the ring is assigned a range of token values 
+- [ ] In earlier versions a node claimed ownership of the range of values less than or equal to each token and greater than the token of the previous node  
+
+
 ```
-Each Cassandra node in the ring is assigned a range of token values.  
-In earlier versions of Cassandra (before version 1.2), token ranges were manually assigned to nodes. A node claimed ownership of the range of values less than or equal to each token and greater than the token of the previous node.  
+    /*
+     * A token corresponds to the range of all the keys having this token.
+     * A token is thus not comparable directly to a key. But to be able to select
+     * keys given tokens, we introduce two "fake" keys for each token T:
+     *   - lowerBoundKey: a "fake" key representing the lower bound T represents.
+     *                    In other words, lowerBoundKey is the smallest key that
+     *                    have token T.
+     *   - upperBoundKey: a "fake" key representing the upper bound T represents.
+     *                    In other words, upperBoundKey is the largest key that
+     *                    have token T.
+     *
+     * Note that those are "fake" keys and should only be used for comparison
+     * of other keys, for selection of keys when only a token is known.
+     */
+	 
+	 
+    /*
+     * For each token, we needs both minKeyBound and maxKeyBound
+     * because a token corresponds to a range of keys. But the minimun
+     * token corresponds to no key, so it is valid and actually much
+     * simpler to associate the same value for minKeyBound and
+     * maxKeyBound for the minimun token.
+     */
+	 
+
+```
 
 _Node-level architecture_  
-The Cassandra daemon manages various in-memory and disk-based data structures. Commit logs are used to record writes to disk as a crash recovery mechanism. One of the reasons that writes in Cassandra are so fast is that all keyspaces share a common commit log, so as soon as a write appends data to the commit log on a replica, as far as the coordinator node is concerned, the write is considered complete.  
-
-Sorted String Tables (**SSTables**) provide permanent on-disk storage for Cassandra.  
-When Cassandra writes data, **SSTables** aren’t stored right away. This is because writes are stored in **Memtables** to maximize performance and are only flushed periodically to disk.  
-Row caches and key caches are used to cache frequently accessed data to help with performance. For small tables, the entire table may be cached in memory. 
+ - [ ] Cassandra daemon manages various in-memory and disk-based data structures 
+ - [ ] Commit logs are used to record writes to disk as a crash recovery mechanism 
+ - [ ] One of the reasons that writes are so fast: all keyspaces share a common commit log 
+ - [ ] As soon as a write appends data to the commit log on a replica, the write is considered complete (as far as the coordinator node is concerned)  
+ - [ ] Sorted String Tables (**SSTables**) provide permanent on-disk storage for Cassandra  
+ - [ ] When writing data, **SSTables** aren’t stored right away 
+ - [ ] Writes are stored in **Memtables** first to maximize performance   
+ - [ ] Are only flushed periodically to disk  
+ - [ ] Row/Key caches: cache frequently accessed data to help with performance  
+ - [ ] Small tables: the entire table may be cached in memory  
 
 ![alt text](image-8.png)  
 
 
 _How Cassandra writes data_  
-- [x] When data is written to a node, it is first(not exactly, it is a kind of paral. op.) stored to the commit log so that the write can be recovered if the node fails
-- [x] A copy of the data is also stored in the **memtable** where it is accessible for subsequent read operations or future updates without the need to go to disk (**Memtable**/Table basis)
-- [x] If the row cache is in use and there is an older copy of the row already in the cache, the old copy is invalidated and replaced with the new data value
-- [x] In the background, Cassandra monitors the size of the **memtable**. If the **memtable** reaches a certain threshold size, Cassandra writes the **memtable** data to **SSTables** which are never deleted. (**SSTable(s)**/Table basis) Cassandra has a mechanism called compaction that runs periodically to consolidate **SSTables**.  
+- [ ] When data is written to a node: stored to the commit log (the write can be recovered if the node fails)
+- [ ] A copy of the data is also stored in the **memtable** 
+- [ ] There it is accessible for subsequent read operations or future updates without the need to go to disk (**Memtable**/Table basis)  
+- [ ] If the row cache is in use + there is an older copy -> invalidated + replaced with the new data  
+- [ ] Background: Cassandra monitors the size of the **memtable**. 
+- [ ] If reaches a certain threshold size: **memtable** data is written to **SSTables** (**SSTable(s)**/Table basis) 
+- [ ] Compaction: runs periodically to consolidate **SSTables**  
+  
 
 _Write performance_  
-One of the most impressive features of Cassandra is its exceptional write performance. Cassandra can complete a write as soon as data is logged to the commit log while other operations happen asynchronously. Also, performance scales directly with the number of nodes in the cluster. Cassandra has been shown to deliver up to one million writes per second in production-scale clusters.  
+- [ ] One of the most impressive features of Cassandra: exceptional write performance 
+- [ ] Can complete a write as soon as data is logged to the commit log 
+- [ ] Other operations happen asynchronously  
+- [ ] Performance scales directly with the number of nodes in the cluster  
+- [ ] Has been shown to deliver up to one million writes per second in production-scale clusters (?) 
 
 > ​Cassandra delivers one million writes per second at Netflix - <https://medium.com/netflix-techblog/benchmarking-cassandra-scalability-on-aws-over-a-million-writes-per-second-39f45f066c9e>  
 
 _How Cassandra reads data_  
-
-Reads in Cassandra are more complicated than writes. The read operation begins when a client connects to a coordinator node with a read query. Like a write request, the coordinator node will use the partitioner to determine which nodes hold replicas of the data.  
-Like writes, the performance of a read depends on the consistency required for the query. As a reminder, read consistency refers to the number of replicas that need to agree before a result is considered valid. If there is no consensus on a result, Cassandra will internally run a “read repair” operation, forcing Cassandra to update pending changes lingering on replicas before returning a result to the client.  
-This is an example of how requiring strong consistency can affect performance. For each replica contacted during a read, Cassandra needs to perform several steps and combine results from the active **memtable** and potentially multiple **SSTables** as well.  
+- [ ] More complicated than writes  
+- [ ] Begins when a client connects to a coordinator node with a read query  
+- [ ] Coordinator node: will use the partitioner to determine which nodes hold replicas of the data  
+- [ ] Performance of a read: depends on the consistency required for the query  
+- [ ] Read consistency: number of replicas that need to agree before a result is considered valid 
+- [ ] No consensus on a result: internal "read repair" 
+- [ ] Force to update pending changes on replicas before returning a result  
+- [ ] Example how strong consistency affect performance  
+- [ ] Replicas contacted during read: need several steps and combine results from the active **memtable** and potentially multiple **SSTables** as well  
+ 
 
 Figure describes the sequence of operations on each replica node:  
 ![alt text](image-7.png)  
 
 
-- [x] When querying a replica, the first place to look is in the row cache. If the needed data is available in the row cache, it can be returned immediately
-- [x] Next, Cassandra will check the key cache (if enabled). If the partition key is found in the key cache, Cassandra can use the key to learn where data is stored by reading an in-memory compressed offset map
-- [x] Next, Cassandra will check the **memtable** to see if the required data is present
-- [x] After this, Cassandra fetches data from **SSTables** on disk and combines it with data from the **memtable** to construct an up-to-date view of the data queried
-- [x] Finally, if row caching is enabled, Cassandra will store the data in the row cache (to accelerate subsequent reads of the same data) and return results to the coordinator node
+- [ ] Querying a replica, first place to look: row cache  
+- [ ] Data is available: returned immediately  
+- [ ] Next: check the key cache (if enabled) 
+- [ ] Found: use the key to learn where data is stored by reading an in-memory compressed offset map  
+- [ ] Next: check the **memtable** if the data is present  
+- [ ] After: fetch data from **SSTables** on disk + combine with data from the **memtable** (to construct an up-to-date view of the data queried)  
+- [ ] Finally: if row caching is enabled -> store in the row cache (to accelerate subsequent reads of the same data) and return results to the coordinator node
 
-> These steps are slightly simplified. Cassandra has additional optimizations such as in -memory **bloom filters** that can speed up the process of partition key lookups by narrowing the pool of keys to search  
 
-_A typical customer problem_  
+> Steps slightly simplified.. Additional optimizations: in-memory **bloom filters**  (can speed up the process of partition key lookups by narrowing the pool of keys to search)  
 
-Consider the example of a DB managing millions of customer accounts. Focus on just two tables:  
-A ​customer table​ maintains a list of all ​customers. Contains details like the customer’s unique ID, name, encrypted password, etc.  
-A​ customer_transactions table​ logs a record every time a customer makes any kind of transaction: purchases, transfers, etc.  
-Now imagine a service with ten million user accounts where each user has logged an average of 1000 transaction events, each approximately 1 KB in size. This works out to ten TB of data in the customer_transactions table alone, and that’s before replication and assuming no overhead.  
 
-It appears that customer names and email addresses are being stored redundantly, but as we’ll see shortly, this is just a matter of how CQL presents tabular data views. Cassandra supports static columns ​​where a single value is associated with each partition key.  
+_Typical customer problem_  
+
+- [ ] A DB managing millions of customer accounts  
+- [ ] Focus on just two tables:  
+    - customer table:​ list of all ​customers, details like the customer’s unique ID, name, encrypted password, etc. 
+    - customer_transactions table:​ logs a record every time a customer makes any kind of transaction (purchases, transfers, etc.)  
+- [ ] Imagine a service with 10M user accounts + each user has logged an average of 1000 transaction events (each approximately 1 KB in size)  
+- [ ] 10 TB of data in the customer_transactions table alone (before replication and assuming no overhead..)  
+- [ ] Can appear: customer names and email addresses are being stored redundantly  
+- [ ] But just a matter of how CQL presents tabular data views  
+- [ ] Static columns: ​​a single value is associated with each partition key  
+
+
 
 **cust_id** | **cust_name** | **cust_email** | **event_time** | **event_type** | **...**
 ---------|----------|---------|---------|---------|---------
@@ -717,35 +785,7 @@ public class SkipListMemtable
 	...
 }
 ```
-
-```
-    /*
-     * A token corresponds to the range of all the keys having this token.
-     * A token is thus not comparable directly to a key. But to be able to select
-     * keys given tokens, we introduce two "fake" keys for each token T:
-     *   - lowerBoundKey: a "fake" key representing the lower bound T represents.
-     *                    In other words, lowerBoundKey is the smallest key that
-     *                    have token T.
-     *   - upperBoundKey: a "fake" key representing the upper bound T represents.
-     *                    In other words, upperBoundKey is the largest key that
-     *                    have token T.
-     *
-     * Note that those are "fake" keys and should only be used for comparison
-     * of other keys, for selection of keys when only a token is known.
-     */
-	 
-	 
-    /*
-     * For each token, we needs both minKeyBound and maxKeyBound
-     * because a token corresponds to a range of keys. But the minimun
-     * token corresponds to no key, so it is valid and actually much
-     * simpler to associate the same value for minKeyBound and
-     * maxKeyBound for the minimun token.
-     */
-	 
-
-```
-		
+	
 ### MongoDB
 Supports pluggable storage engines -> utilizes memory differently   
 - [ ] in-memory storage engine -> active data only in memory 
