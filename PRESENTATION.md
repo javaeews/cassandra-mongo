@@ -12,6 +12,8 @@
 
 > ***"A very observant person could also point out that Facebook uses MySQL in a way that isn't too dissimilar sharding a NoSQL database and leveraging Memcache on top of it"***  
 
+> ***"MongoDB was known to be less reliable because it didn't support ACID transaction semantics in the early days. This has changed since they acquired WiredTiger and use its WiredTiger storage engine. Today, from the transaction perspective, MongoDB is as solid as Postgres"***  <https://www.bytebase.com/blog/postgres-vs-mongodb>   
+
 
 > ***"Performance is primarily determined by the access pattern. If an operation involves different entities, MongoDB is usually faster because data is de-normalized and doesn't require costly joins between tables. On the other hand, Postgres is more capable of handling complex queries thanks to SQL and its sophisticated query optimizer."***  
 <https://www.bytebase.com/blog/postgres-vs-mongodb>  
@@ -79,8 +81,6 @@ need to do that yourself. So we at Monzo, we actually use etcd for that, which i
 distributed key-value store which runs – We run it in memory.   
 
 - [ ] Failover, locking, etc.
-
-
 
 
 ## Előtörténet, hogyan alakultak ki  
@@ -889,7 +889,7 @@ h2 = __wt_hash_city64(key->data, key->size);
 			
 ## Lekérdező nyelv
 ### Cassandra
-- [ ] Cassandra Query Language (CQL). CQL is a 
+- [ ] Cassandra Query Language (CQL)  
 - [ ] Simple interface for accessing Cassandra (SQL alternative)  
   
 			
@@ -904,7 +904,7 @@ SELECT * FROM transaction.credit_card_transactions;
 ```		
 
 _More realistic example:_  
-[From Jon Haddad: Massively Scalable Time Series with Apache Cassandra]
+(From Jon Haddad: Massively Scalable Time Series with Apache Cassandra)  
 
 ![alt text](image-22.png)  
 
@@ -1087,21 +1087,17 @@ An underrated feature of Cassandra is that it provides tunable consistency, allo
 
 ##### ISOLATION
 - [ ] Write and delete operations are performed with full row-level isolation   
-write to a row within a single partition on a single node is only visible to the client performing the operation (until it is complete)  
+- [ ] Write to a row within a single partition on a single node is only visible to the client performing the operation (until it is complete)  
 
 ##### DURABILITY
-- [ ] Writes are recorded:   
-in memory and to the commit log on disk before they are acknowledged as a success 
+- [ ] Writes are recorded: (before they are acknowledged as a success)    
+      - In memory    
+      - To the commit log on disk  
 - [ ] Crash/server failure before the memtables are flushed to disk:   
-the commit log is replayed on restart to recover any lost writes
+      - Commit log replayed on restart  
+
 		
 ### MongoDB  
-![alt text](image-19.png)  
-
-> **MongoDB was known to be less reliable because it didn't support ACID transaction semantics in the early days. This has changed since they acquired WiredTiger and use its WiredTiger storage engine. Today, from the transaction perspective, MongoDB is as solid as Postgres.**  [<https://www.bytebase.com/blog/postgres-vs-mongodb>]
-
-
-
 - [ ] A write is atomic on the level of a single document, even if the operation modifies multiple embedded documents within a single document
 - [ ] When a single write operation modifies multiple documents, the operation as a whole is **not** atomic  
   
@@ -1147,6 +1143,8 @@ Three isolation models are supported in WiredTiger, from weaker to stronger:
 - [ ] **read-uncommitted:** Transactions can see changes made by other transactions before those transactions are committed. Dirty reads, non-repeatable reads and phantoms are possible.  
 - [ ] **read-committed:** Transactions cannot see changes made by other transactions before those transactions are committed. Dirty reads are not possible; non-repeatable reads and phantoms are possible. Committed changes from concurrent transactions become visible periodically during the lifecycle of the transaction.  
 - [x] **snapshot:** Transactions read the versions of records committed before the transaction started. Dirty reads and non-repeatable reads are not possible; _phantoms are possible_. Snapshot isolation is the default isolation level, and all updates must be done using snapshot isolation.  
+
+![alt text](image-19.png)  
 
 ![alt text](image-21.png)  
 
