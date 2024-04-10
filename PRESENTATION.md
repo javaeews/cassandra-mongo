@@ -819,8 +819,8 @@ public class SkipListMemtable
 - [ ] Supports pluggable storage engines   
 - [ ] In-memory storage engine (active data only in memory)   
 - [ ] Default: WiredTiger storage engine MongoDB 3.2+ (source.wiredtiger.com)    
-              - B-tree and LSM configurations  
-              - Mongo: only in B-tree config  (why?)
+              - B-tree and LSM configurations   
+              - Mongo: only in B-tree config  (why?)  
               - MultiVersion Concurrency Control (MVCC)  
 
 
@@ -1142,21 +1142,21 @@ _Example:_
 				
 ##### ISOLATION
 Isolation models supported in WiredTiger: (weaker to stronger)  
-- [ ] **read-uncommitted:** See uncommitted changes by other transactions 
-      - [x] Dirty reads 
-      - [x] Non-repeatable reads 
-      - [x] Phantom reads
-- [ ] **read-committed:** Cannot see uncommitted changes
-      - [ ] ~~Dirty reads~~ 
-      - [x] Non-repeatable reads 
-      - [x] Phantom reads 
+- [ ] **read-uncommitted:** See uncommitted changes by other transactions  
+      - [x] Dirty reads  
+      - [x] Non-repeatable reads  
+      - [x] Phantom reads  
+- [ ] **read-committed:** Cannot see uncommitted changes  
+      - [ ] ~~Dirty reads~~  
+      - [x] Non-repeatable reads  
+      - [x] Phantom reads  
       - [ ] Committed changes from concurrent transactions become visible periodically during the lifecycle of the transaction  
-- [x] **snapshot:** Transactions read the versions committed before the transaction started 
-      - [ ] ~~Dirty reads~~ 
+- [x] **snapshot:** Transactions read the versions committed before the transaction started  
+      - [ ] ~~Dirty reads~~  
       - [ ] ~~Non-repeatable reads~~  
-      - [x] Phantom reads 
+      - [x] Phantom reads  
       - [ ] Default isolation level  
-      - [ ] All updates must be done using snapshot isolation  
+      - [ ] All updates must be done using snapshot isolation   
   
 
 ![alt text](image-19.png)  
@@ -1175,12 +1175,12 @@ Isolation models supported in WiredTiger: (weaker to stronger)
 
 
 ##### DURABILITY  
-WiredTiger transactions support: 
+WiredTiger transactions support:  
 - [x] Commit level durability   
-      - [ ] If Logging is enabled on the table 
-      - [ ] After it has been successfully committed, the operation is guaranteed to survive restart  
-- [x] Checkpoint level durability  
-      - [ ] Survives restart only if included in the last checkpoint  
+      - [ ] If Logging is enabled on the table  
+      - [ ] After it has been successfully committed, the operation is guaranteed to survive restart   
+- [x] Checkpoint level durability   
+      - [ ] Survives restart only if included in the last checkpoint   
 
 			
 ## Isolation/locking mechanikák
@@ -1193,9 +1193,9 @@ WiredTiger transactions support:
 			
 ## Skálázhatóság
 #### Vertical scalability
-- [ ] Increasing capacity of a single machine or node (upgrading hardware such as RAM, CPU, storage) 
+- [ ] Increasing capacity of a single machine or node (upgrading hardware such as RAM, CPU, storage)  
 - [ ] Costly and resource-intensive  
-- [ ] Migration requires careful planning + effort 
+- [ ] Migration requires careful planning + effort  
 - [ ] Especially for large volumes of data  
 		
 #### Horizontal scalability
@@ -1211,7 +1211,7 @@ WiredTiger transactions support:
 - [ ] Any node can provide the exact same functionality as any other node  
 
 ### MongoDB 
-- [ ] Standalone | Primary | Secondary
+- [ ] Standalone | Primary | Secondary  
 
 ## Érdekességek Cassandra oldalról
 
@@ -1221,26 +1221,26 @@ https://www.youtube.com/watch?v=xF5y_n9viv8
 https://youtu.be/xF5y_n9viv8?t=4028  
 https://www.youtube.com/watch?v=ZYnWVOY6EWk  
 		
-- [ ] Decentralised
-- [ ] Linear upscale
-- [ ] Petabytes of data
-- [ ] Customers don't wait-> competitors
-- [ ] No single point of failure, downtime ~ impossible
-- [ ] Important the role of the client: smart reconnection, retry, failover
-- [ ] DataStax gave a lot, but it is not owned by the company 
-- [ ] Redis is super fast while operating in memory
-- [ ] MongoDB has more bottleneck in case of failure
-- [ ] Disk space is free. Your reputation is expensive..
-- [ ] SSD recommended
-- [ ] AP or CP also can be. (Money vs profile image) -> Each statement can have unique consistency level set
-- [ ] Mix: high on write or high on read - ONE confirmation is enough or ALL when we wait for all acks.
-- [ ] Slower -> higher consistency
-- [ ] Fast -> lower cons. level
-- [ ] Each app will have different cons. levels for read/write. Can we deal with stale data?
-- [ ] Big partition size, problems when addig/removing nodes (servers) in data centers due to high volume of data to be transfered
-- [ ] Avoid big and constantly growing partitions.(png)
-- [ ] Too many partition is not a problem.
-- [ ] Hot partitions to be avoided: eg. video_id -> uneven
+- [ ] Decentralised  
+- [ ] Linear upscale  
+- [ ] Petabytes of data  
+- [ ] Customers don't wait-> competitors  
+- [ ] No single point of failure, downtime ~ impossible  
+- [ ] Important the role of the client: smart reconnection, retry, failover  
+- [ ] DataStax gave a lot, but it is not owned by the company  
+- [ ] Redis is super fast while operating in memory  
+- [ ] MongoDB has more bottleneck in case of failure  
+- [ ] Disk space is free. Your reputation is expensive..  
+- [ ] SSD recommended  
+- [ ] AP or CP also can be. (Money vs profile image) -> Each statement can have unique consistency level set  
+- [ ] Mix: high on write or high on read - ONE confirmation is enough or ALL when we wait for all acks.  
+- [ ] Slower -> higher consistency  
+- [ ] Fast -> lower cons. level  
+- [ ] Each app will have different cons. levels for read/write. Can we deal with stale data?  
+- [ ] Big partition size, problems when addig/removing nodes (servers) in data centers due to high volume of data to be transfered  
+- [ ] Avoid big and constantly growing partitions  
+- [ ] Too many partition is not a problem  
+- [ ] Hot partitions to be avoided: eg. video_id -> uneven  
 
 
 ## Cassandra at Monzo
