@@ -12,6 +12,10 @@
 
 > ***"A very observant person could also point out that Facebook uses MySQL in a way that isn't too dissimilar sharding a NoSQL database and leveraging Memcache on top of it"***  
 
+
+> ***"Performance is primarily determined by the access pattern. If an operation involves different entities, MongoDB is usually faster because data is de-normalized and doesn't require costly joins between tables. On the other hand, Postgres is more capable of handling complex queries thanks to SQL and its sophisticated query optimizer."***  
+<https://www.bytebase.com/blog/postgres-vs-mongodb>  
+
 ![alt text](image-13.png)  
 > ***"Because of the way Cassandra is architectured, it's extremely good at certain use cases and extremely bad at others! I have used it in the past in various projects with great success. In particular, we had a project in King where our system had to support around 1,000,000 requests per second from all around the world. Cassandra could handle that without breaking a sweat. Good luck doing that with another database."***  
 
@@ -580,32 +584,32 @@ PRIMARY KEY((Partition Key), Clustering Keys)
 
 
 ```
-    /*
-     * A token corresponds to the range of all the keys having this token.
-     * A token is thus not comparable directly to a key. But to be able to select
-     * keys given tokens, we introduce two "fake" keys for each token T:
-     *   - lowerBoundKey: a "fake" key representing the lower bound T represents.
-     *                    In other words, lowerBoundKey is the smallest key that
-     *                    have token T.
-     *   - upperBoundKey: a "fake" key representing the upper bound T represents.
-     *                    In other words, upperBoundKey is the largest key that
-     *                    have token T.
-     *
-     * Note that those are "fake" keys and should only be used for comparison
-     * of other keys, for selection of keys when only a token is known.
-     */
+/*
+ * A token corresponds to the range of all the keys having this token.
+ * A token is thus not comparable directly to a key. But to be able to select
+ * keys given tokens, we introduce two "fake" keys for each token T:
+ *   - lowerBoundKey: a "fake" key representing the lower bound T represents.
+ *                    In other words, lowerBoundKey is the smallest key that
+ *                    have token T.
+ *   - upperBoundKey: a "fake" key representing the upper bound T represents.
+ *                    In other words, upperBoundKey is the largest key that
+ *                    have token T.
+ *
+ * Note that those are "fake" keys and should only be used for comparison
+ * of other keys, for selection of keys when only a token is known.
+ */
 	 
-	 
-    /*
-     * For each token, we needs both minKeyBound and maxKeyBound
-     * because a token corresponds to a range of keys. But the minimun
-     * token corresponds to no key, so it is valid and actually much
-     * simpler to associate the same value for minKeyBound and
-     * maxKeyBound for the minimun token.
-     */
-	 
-
+```  
+ 
 ```
+/*
+ * For each token, we needs both minKeyBound and maxKeyBound
+ * because a token corresponds to a range of keys. But the minimun
+ * token corresponds to no key, so it is valid and actually much
+ * simpler to associate the same value for minKeyBound and
+ * maxKeyBound for the minimun token.
+ */
+```  
 
 _Node-level architecture_  
  - [ ] Cassandra daemon manages various in-memory and disk-based data structures 
@@ -728,32 +732,56 @@ Cassandra offers the following partitioners that can be set in the cassandra.yam
 - [ ] RandomPartitioner: uniformly distributes data across the cluster based on MD5 hash values.
 - [ ] ByteOrderedPartitioner: keeps an ordered distribution of data lexically by key bytes
 
-The Murmur3Partitioner is the default partitioning strategy for Cassandra 1.2 and later new clusters and the right choice for new clusters in almost all cases. However, the partitioners are not compatible and data partitioned with one partitioner cannot be easily converted to the other partitioner.  
 
-> One such fastest hash algorithm is the **MurmurHash**, which has gained widespread popularity due to its impressive speed and minimal computational resources. **MurmurHash** is a non-cryptographic hash function that delivers exceptional performance and a low collision rate. It is particularly suitable for use in hashing non-critical data such as database keys, cache hashes, or network protocol checksums. Another contender in the race for the fastest hash algorithm is **CityHash**, developed by Google engineers. **CityHash** offers remarkable speed and quality, making it ideal for applications requiring large-scale, parallel processing. It is also highly adaptable, allowing developers to optimize the algorithm according to specific hardware configurations. [<https://locall.host/which-hash-algorithm-is-fastest/>]  
+- [x] Murmur3Partitioner: default strategy for Cassandra 1.2+  
+- [x] Not compatible (partitioned with one: cannot be easily converted to other partitioner  
+ 
+**MurmurHash algorithm**
 
-```
-Assume you're trying to locate where the rows corresponding to the usernames abcd and abce and abcf are stored.  
+- [ ] Impressive speed  
+- [ ] Minimal computational resources  
+- [ ] Non-cryptographic  
+- [ ] Low collision rate  
+- [ ] For non-critical (db keys, cache hashes, network protocol checksums)   
+- [ ] Other: **CityHash** by Google engineers: WiredTiger bloom filter  
+- [ ] <https://locall.host/which-hash-algorithm-is-fastest/>     
 
-The hex representation of these strings are:
-- 0x61626364 
-- 0x61626365 
-- 0x61626366
 
-Assuming we apply this MurmurHash3 implementation on both strings we get: 
+**Example: locate rows to usernames**  
+- [ ] Keys:  
+    - abcd  
+    - abce  
+    - abcf  
+
+- [ ] Hex representations:
+    - 0x61626364 
+    - 0x61626365 
+    - 0x61626366  
+
+- [ ] Tokens:
+
+```  
+Murmur3Partitioner:  
 - 0x43ED676A
 - 0xE297E8AA
 - 0x87E62668 
 
-So, in the case of MurmurHash3, the tokens of the strings will be these 3 values, while in the case of the ByteOrderedPartitioner the tokens will be the raw data values themselves: 
-- 0x61626364
-- 0x61626365 
-- 0x61626366
+ByteOrderedPartitioner:
+- 0x61626364   
+- 0x61626365    
+- 0x61626366   
+```   
 
-```
-Cassandra's current memtable implementation uses a hierarchy of comparison-based data structures to organize data:  
-- [ ] a concurrent skip list is used to index database partitions
-- [ ] separate B-Trees are used to index rows within a partition, columns within a row, and individual cells within a complex column
+**Current memtable implementation**   
+- [ ] Hierarchy of comparison-based data structures    
+- [ ] ConcurrentSkipList: index partitions
+- [ ] Separate B-Trees index 
+      - rows in a partition   
+      - columns in a row  
+      - cells in a complex column  
+
+
+**Snippets**  
 
 ```
 public abstract class DecoratedKey
@@ -771,10 +799,7 @@ public final class AtomicBTreePartition extends AbstractBTreePartition
 	...
 }
 ```
-
-**Extract from the org.apache.cassandra.utils.btree.BTree.java class ~4197 lines** 
-![alt text](image-3.png)
-
+   
 ```
 public class SkipListMemtable
 {
@@ -785,81 +810,69 @@ public class SkipListMemtable
 	...
 }
 ```
-	
+
+**Extract from the org.apache.cassandra.utils.btree.BTree.java class ~4197 lines** 
+![alt text](image-3.png)   
+
+
 ### MongoDB
-Supports pluggable storage engines -> utilizes memory differently   
-- [ ] in-memory storage engine -> active data only in memory 
-- [ ] default: WiredTiger storage engine [[source.wiredtiger.com](source.wiredtiger.com)] (MongoDB 3.2 <)   
-				*comes in both B-tree and LSM configurations  
-				*however, MongoDB ships WiredTiger in only B-tree configuration keeping it simple for users  
-				*uses MultiVersion Concurrency Control (MVCC)   
-				 At the start of an operation -> provides a point-in-time snapshot of the data to the operation  
-				 Snapshot -> a consistent view of the in-memory data  
-				*When writing to disk, WiredTiger writes all the data in a snapshot to disk (consistent way across all data files)  
-			
+- [ ] Supports pluggable storage engines   
+- [ ] In-memory storage engine (active data only in memory)   
+- [ ] Default: WiredTiger storage engine MongoDB 3.2+ (source.wiredtiger.com)    
+              - B-tree and LSM configurations  
+              - Mongo: only in B-tree config  (why?)
+              - MultiVersion Concurrency Control (MVCC)  
+
+
 **durability: Journal + Checkpoint**
 - [ ] Journal:
-	For each write -> MongoDB writes the changes into Journal files (~transaction log files, which is basically a WAL mechanism used by MongoDB
-- [ ] Checkpoint:
-	Create checkpoints -> write the snapshot data to disk  
-	At every checkpoint interval (Def. 60 sec), MongoDB flushes the changes in the cache to their respective data files  
+	- Each write: changes into Journal files (~transaction log files, basically a WAL mechanism used by MongoDB)  
+- [ ] Checkpoint:  
+	- Creating checkpoints: snapshot data to disk  
+	- At every checkpoint interval (Def. 60 sec): flush the changes in the cache to their respective data files   
 
-
+	
 _WiredTiger syncs the buffered journal records to disk upon any of the following conditions:_  
 
-- [x] Read operations performed as part of causally consistent sessions  
-- [x] If a write operation includes or implies a write concern of j: true.  
-- [x] At every 100 milliseconds (storage.journal.commitIntervalMs)  
-- [x] When WiredTiger creates a new journal file(approximately every 100 MB of data)  
+- [ ] Reads of causally consistent sessions  
+- [ ] Write includes/implies a write concern j: true  
+- [ ] Every 100 ms (storage.journal.commitIntervalMs)  
+- [ ] WiredTiger creates new journal file (~ 100 MB of data)  
 
-> **Performance is primarily determined by the access pattern. If an operation involves different entities, MongoDB is usually faster because data is de-normalized and doesn't require costly joins between tables. On the other hand, Postgres is more capable of handling complex queries thanks to SQL and its sophisticated query optimizer.**  
-
-
-[<https://www.bytebase.com/blog/postgres-vs-mongodb>]  
-
-
-
-
-![alt text](image-6.png)
 
 ```
-			/*
-			 * __wt_bloom_inmem_get --
-			 *     Tests whether the given key is in the Bloom filter. This can be used in place of
-			 *     __wt_bloom_get for Bloom filters that are memory only.
-			 */
-			int
-			__wt_bloom_inmem_get(WT_BLOOM *bloom, WT_ITEM *key)
-			{
-				uint64_t h1, h2;
-				uint32_t i;
+/*
+ * __wt_bloom_inmem_get --
+ *     Tests whether the given key is in the Bloom filter. This can be used in place of
+ *     __wt_bloom_get for Bloom filters that are memory only.
+ */
+int __wt_bloom_inmem_get(WT_BLOOM *bloom, WT_ITEM *key){
+uint64_t h1, h2;
+uint32_t i;
 
-				h1 = __wt_hash_fnv64(key->data, key->size);
-				h2 = __wt_hash_city64(key->data, key->size);
-				for (i = 0; i < bloom->k; i++, h1 += h2) {
-					if (!__bit_test(bloom->bitstring, h1 % bloom->m))
-						return (WT_NOTFOUND);
-				}
-				return (0);
-			}
+h1 = __wt_hash_fnv64(key->data, key->size);
+h2 = __wt_hash_city64(key->data, key->size);
+    for (i = 0; i < bloom->k; i++, h1 += h2) {
+	    if (!__bit_test(bloom->bitstring, h1 % bloom->m))
+		    return (WT_NOTFOUND);
+    }
+    return (0);
+}
 
 ```
 
-**Image from the BTree implementation of the Wired Tiger Storage Engine**
-![alt text](image-4.png)	
-	
 ## Tesztelés
 ### Cassandra
 - [ ] Monzo(~Revolut), ING Bank, financial transactions.. <-> org.apache.cassandra.utils.btree.BTree.java ~4197 lines 
 - [ ] High degree of confidence for every commit:   
-- the database is working as expected   
-- not only for an exact set of operations (unit & integration tests)   
-- potentially for any use-case & combination of operations   
-- under circumstances comparable to production  
-- [ ] Harry  (helyesség)
-- combine stress & integration-testing tools  
-- <https://issues.apache.org/jira/browse/CASSANDRA-16453>  
-- <https://cassandra.apache.org/_/blog/Harry-an-Open-Source-Fuzz-Testing-and-Verification-Tool-for-Apache-Cassandra.html>  
+    - the database is working as expected   
+    - not only for an exact set of operations (unit & integration tests)   
+    - potentially for any use-case & combination of operations   
+    - under circumstances comparable to production  
+- [ ] Harry  (helyesség)  
+    - combine stress & integration-testing tools  
+    - <https://issues.apache.org/jira/browse/CASSANDRA-16453>  
+    - <https://cassandra.apache.org/_/blog/Harry-an-Open-Source-Fuzz-Testing-and-Verification-Tool-for-Apache-Cassandra.html>  
 			
 **Performance testing:**  
 - [x] cassandra-stress [https://cassandra.apache.org/doc/stable/cassandra/tools/cassandra_stress.html]  
@@ -873,12 +886,12 @@ _WiredTiger syncs the buffered journal records to disk upon any of the following
 - [x] Discover metadata from your existing infrastructure and services  
 - [x] Synthetic data generation that is production-like without ever connecting to production  
 
-
-
 			
 ## Lekérdező nyelv
 ### Cassandra
-Introduced the Cassandra Query Language (CQL). CQL is a simple interface for accessing Cassandra, as an alternative to the traditional Structured Query Language (SQL).  
+- [ ] Cassandra Query Language (CQL). CQL is a 
+- [ ] Simple interface for accessing Cassandra (SQL alternative)  
+  
 			
 ```
 CREATE KEYSPACE IF NOT EXISTS transaction WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : '1' };
@@ -890,47 +903,53 @@ INSERT into transaction.credit_card_transactions (credit_card_no, transaction_ti
 SELECT * FROM transaction.credit_card_transactions;
 ```		
 
-_A more realistic example:_  
+_More realistic example:_  
 [From Jon Haddad: Massively Scalable Time Series with Apache Cassandra]
 
 ![alt text](image-22.png)  
 
 - [ ] At time series: common to define a TTL
-- [ ] Compaction strategy can make huge differences, have to be careful: CPU cost!
+- [ ] Compaction strategy: can make huge differences, be careful: CPU cost!
 - [ ] Allows to compact only windows of data, fairly common pattern  
+ 
 
 > **Good, but.. not the best on long term**  
 
-- [ ] Putting everything to a single partition: huge mistake when dealing with massive time series    
-- [ ] You can end up unbounded partitions
-- [ ] So seems great for a few month, but.. when you end with 100G-s of partition size
+- [ ] Everything to a single partition: huge mistake when dealing with massive time series    
+- [ ] You can end up with unbounded partitions  
+- [ ] Seems great for a few month, but.. 
+- [ ] When you end with 100G-s of partition size.. :(  
+
 
 ![alt text](image-23.png)  
-> **Add a time component to the partition key..**  
-- [ ] Now we have multiple partitions per time series
-- [ ] Each day: own partition
-- [ ] So a gold rule can be 1-10K rows/partition (Remember: the number mentioned at the rules of a good partition: Up to ~100k rows in a partition [DataStax recommends])
-- [ ] Becomes external cache friendly: putting an external layer over Cassandra, e.g. Memcached: Cheaper and can put off load from Cassandra
+> **Let's add a time component to the partition key..**  
+- [ ] Now we have multiple partitions per time series  
+- [ ] Each day: own partition  
+- [ ] Gold rule can be: 1-10K rows/partition (Remember: the number mentioned at the rules of a good partition: Up to ~100k rows in a partition [DataStax recommends])
+- [ ] Becomes external cache friendly  
+- [ ] An external layer over Cassandra, e.g. Memcached: Cheaper and can put off load  
+
 
 ![alt text](image-24.png)  
-> **Going a step further: New index table/month**  
+> **Let's go a step further.. New index table/month**  
+- [ ] Seems strange..   
+- [ ] Duplicate data.. 
+- [ ] But..  
+- [x] No need for TTL: just drop old data  
+- [x] More dynamic  
+- [ ] We are using now tables for time windows  
+- [ ] TimeWindowCompactionStrategy?  
+- [ ] Not sure the best when dealing with huge amount of data  
+- [ ] Move it somewhere cheaper (e.g. object store)  
 
-- [ ] Seems strange: duplicating data, but:
-- [ ] No need for TTL: just drop old data: more dynamic
-- [ ] Now we are using tables for time windows: TimeWindowCompactionStrategy? Not sure the best when dealing with huge amount of data
-- [ ] Move it somewhere cheaper, like object store
 
 _Other more realistic example:_   
-From [<https://github.com/openzipkin/zipkin/blob/master/zipkin-storage/cassandra/src/test/resources/zipkin2-test-schema.cql>]  
+From <https://github.com/openzipkin/zipkin/blob/master/zipkin-storage/cassandra/src/test/resources/zipkin2-test-schema.cql>  
 
+```   
+CREATE KEYSPACE IF NOT EXISTS zipkin2 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'} AND durable_writes = false;
 
-```
-
-CREATE KEYSPACE IF NOT EXISTS stress_zipkin2 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'} AND durable_writes = false;
-
-//-- same schema but remove all UDTs and collections (as cassandra-stress doesn't support them)
-
-CREATE TABLE IF NOT EXISTS stress_zipkin2.span (
+CREATE TABLE IF NOT EXISTS zipkin2.span (
     trace_id            text, // when strictTraceId=false, only contains right-most 16 chars
     ts_uuid             timeuuid,
     id                  text,
@@ -954,16 +973,16 @@ CREATE TABLE IF NOT EXISTS stress_zipkin2.span (
     AND dclocal_read_repair_chance = 0.0
     AND speculative_retry = '95percentile'
     AND comment = 'Primary table for holding trace data';
-CREATE CUSTOM INDEX IF NOT EXISTS ON stress_zipkin2.span (l_service) USING 'org.apache.cassandra.index.sasi.SASIIndex'
+CREATE CUSTOM INDEX IF NOT EXISTS ON zipkin2.span (l_service) USING 'org.apache.cassandra.index.sasi.SASIIndex'
    WITH OPTIONS = {'mode': 'PREFIX'};
-CREATE CUSTOM INDEX IF NOT EXISTS ON stress_zipkin2.span (annotation_query) USING 'org.apache.cassandra.index.sasi.SASIIndex'
+CREATE CUSTOM INDEX IF NOT EXISTS ON zipkin2.span (annotation_query) USING 'org.apache.cassandra.index.sasi.SASIIndex'
    WITH OPTIONS = {
     'mode': 'PREFIX',
     'analyzed': 'true',
     'analyzer_class':'org.apache.cassandra.index.sasi.analyzer.DelimiterAnalyzer',
     'delimiter': '░'};
 
-CREATE TABLE IF NOT EXISTS stress_zipkin2.trace_by_service_span (
+CREATE TABLE IF NOT EXISTS zipkin2.trace_by_service_span (
     service       text,             //-- service name
     span          text,             //-- span name, or blank for queries without span name
     bucket        int,              //-- time bucket, calculated as ts/interval (in microseconds), for some pre-configured interval like 1 day.
@@ -980,10 +999,10 @@ CREATE TABLE IF NOT EXISTS stress_zipkin2.trace_by_service_span (
     AND dclocal_read_repair_chance = 0
     AND speculative_retry = '95percentile'
     AND comment = 'Secondary table for looking up a trace by a service, or service and span. span column may be blank (when only looking up by service). bucket column adds time bucketing to the partition key, values are microseconds rounded to a pre-configured interval (typically one day). ts column is start timestamp of the span as time-uuid, truncated to millisecond precision. duration column is span duration, rounded up to tens of milliseconds (or hundredths of seconds)';
-CREATE CUSTOM INDEX IF NOT EXISTS ON stress_zipkin2.trace_by_service_span (duration) USING 'org.apache.cassandra.index.sasi.SASIIndex'
+CREATE CUSTOM INDEX IF NOT EXISTS ON zipkin2.trace_by_service_span (duration) USING 'org.apache.cassandra.index.sasi.SASIIndex'
    WITH OPTIONS = {'mode': 'PREFIX'};
 
-CREATE TABLE IF NOT EXISTS stress_zipkin2.trace_by_service_remote_service (
+CREATE TABLE IF NOT EXISTS zipkin2.trace_by_service_remote_service (
     service         text,             //-- service name
     remote_service  text,             //-- remote servie name
     bucket          int,              //-- time bucket, calculated as ts/interval (in microseconds), for some pre-configured interval like 1 day.
@@ -1000,7 +1019,7 @@ CREATE TABLE IF NOT EXISTS stress_zipkin2.trace_by_service_remote_service (
     AND speculative_retry = '95percentile'
     AND comment = 'Secondary table for looking up a trace by a remote service. bucket column adds time bucketing to the partition key, values are microseconds rounded to a pre-configured interval (typically one day). ts column is start timestamp of the span as time-uuid, truncated to millisecond precision.';
 
-CREATE TABLE IF NOT EXISTS stress_zipkin2.span_by_service (
+CREATE TABLE IF NOT EXISTS zipkin2.span_by_service (
     service text,
     span    text,
     PRIMARY KEY (service, span)
@@ -1014,7 +1033,7 @@ CREATE TABLE IF NOT EXISTS stress_zipkin2.span_by_service (
     AND speculative_retry = '95percentile'
     AND comment = 'Secondary table for looking up span names by a service name. To compensate for hot partitions, we deduplicate write client side, use LeveledCompactionStrategy with a low threshold and add row caching.';
 
-CREATE TABLE IF NOT EXISTS stress_zipkin2.remote_service_by_service (
+CREATE TABLE IF NOT EXISTS zipkin2.remote_service_by_service (
     service text,
     remote_service text,
     PRIMARY KEY (service, remote_service)
@@ -1028,7 +1047,7 @@ CREATE TABLE IF NOT EXISTS stress_zipkin2.remote_service_by_service (
     AND speculative_retry = '95percentile'
     AND comment = 'Secondary table for looking up remote service names by a service name. To compensate for hot partitions, we deduplicate write client side, use LeveledCompactionStrategy with a low threshold and add row caching.';
 
-CREATE TABLE IF NOT EXISTS stress_zipkin2.autocomplete_tags (
+CREATE TABLE IF NOT EXISTS zipkin2.autocomplete_tags (
     key     text,
     value    text,
     PRIMARY KEY (key, value)
@@ -1042,21 +1061,18 @@ CREATE TABLE IF NOT EXISTS stress_zipkin2.autocomplete_tags (
     AND speculative_retry = '95percentile'
     AND comment = 'Secondary table for looking up span tag values for auto-complete purposes. To compensate for hot partitions, we deduplicate write client side, use LeveledCompactionStrategy with a low threshold and add row caching.';
 
+```   
 
-
-```  
 
 ## Tranzakció támogatás
 ### Cassandra
-- [ ] Atomic, isolated, durable transactions. With restrictions.. 
-
-
+- [ ] Atomic, isolated, durable transactions 
+- [ ] With restrictions!!! 
 - [ ] The cruel reality is as follows:   
   
 _As a non-relational database, Cassandra does not support joins or foreign keys, and consequently does not offer consistency in the ACID sense. Cassandra supports atomicity and isolation at the row-level, but trades transactional isolation and atomicity for high availability and fast write performance. Cassandra writes are durable._   
 
 # Every guarantee concerns TUPLE LEVEL ONLY !!!
-
 
 - [ ] Eventual/tunable consistency: lets the user decide how strong or eventual they want each transaction’s consistency to be  
 
