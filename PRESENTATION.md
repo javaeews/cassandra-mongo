@@ -962,7 +962,7 @@ CREATE TABLE IF NOT EXISTS zipkin2.span (
     shared              boolean,
     debug               boolean,
     l_service           text,
-    annotation_query    text, //-- can't do SASI on set<text>: ░-joined until CASSANDRA-11182
+    annotation_query    text,  
     PRIMARY KEY (trace_id, ts_uuid, id)
 )
     WITH CLUSTERING ORDER BY (ts_uuid DESC)
@@ -1102,107 +1102,116 @@ An underrated feature of Cassandra is that it provides tunable consistency, allo
 - [ ] When a single write operation modifies multiple documents, the operation as a whole is **not** atomic  
   
 **Multi-Document Transactions**  
-- [ ] For situations that require atomicity of reads and writes to multiple documents, MongoDB supports distributed transactions, including transactions on replica sets and sharded clusters  
+- [ ] If atomicity is required: distributed transactions   
+- [ ] Replica sets/sharded clusters?  
+- [ ] Greater performance costs..  
+- [ ] Not a schema design replacement..   ¯\\_(ツ)_/¯ 
+- [ ] Denormalization continues to be optimal..   ¯\\_(ツ)_/¯ 
+- [ ] Minimize their usage..  ¯\\_(ツ)_/¯  
+
+ 
+**Causal Consistency**  
+
+- [ ] An operation logically depends on a preceding operation: _causal relationship_  
+- [ ] Causally consistent sessions  
+- [ ] Operations: in an order respecting their relationships  
+- [ ] MongoDB 3.6+ enables causal consistency: in _client sessions_
+- [ ] Causally related operations:  
+      1. A client starts a client session  
+      2. Reads/writes: include session info with each operation  
+      3. Reads/writes associated with the session: MongoDB returns operation + cluster time  
+      4. Client session tracks these    
    
-> In most cases, a distributed transaction incurs a greater performance cost over single document writes, and the availability of distributed transactions should not be a replacement for effective schema design. For many scenarios, the denormalized data model (embedded documents and arrays) will continue to be optimal for your data and use cases. That is, for many scenarios, modeling your data appropriately will minimize the need for distributed transactions.  
+> **Operations within a causally consistent session are not isolated from operations outside the session. If a concurrent write operation interleaves between the session's write and read operations, the session's read operation may return results that reflect a write operation that occurred after the session's write operation**  
+			
+##### ATOMICITY  
+- [ ] At a single document level + it's embedded documents 
+- [ ] Write operations: first in memory, not to disk  
+- [ ] Until the entire transaction is committed -> size of the transaction must fit in memory!!  
+- [ ] Transaction writes to multiple shards: not all outside read operations need to wait for the result of the commit to be visible across the shards 
+
+_Example:_  
+
+- [ ] Do Write 1  
+- [ ] Do Write 2    
+- [ ] Execute a commit  
+- [ ] Perform an outside read(local read concern) 
+- [ ] It can read Write 1 (visible on shard A)
+- [ ] It cannot read Write 2 (not yet visible on shard B) 
+
+				
+##### ISOLATION
+Isolation models supported in WiredTiger: (weaker to stronger)  
+- [ ] **read-uncommitted:** See uncommitted changes by other transactions 
+      - [x] Dirty reads 
+      - [x] Non-repeatable reads 
+      - [x] Phantom reads
+- [ ] **read-committed:** Cannot see uncommitted changes
+      - [ ] ~~Dirty reads~~ 
+      - [x] Non-repeatable reads 
+      - [x] Phantom reads 
+      - [ ] Committed changes from concurrent transactions become visible periodically during the lifecycle of the transaction  
+- [x] **snapshot:** Transactions read the versions committed before the transaction started 
+      - [ ] ~~Dirty reads~~ 
+      - [ ] ~~Non-repeatable reads~~  
+      - [x] Phantom reads 
+      - [ ] Default isolation level  
+      - [ ] All updates must be done using snapshot isolation  
+  
+
+![alt text](image-19.png)  
 
 **Stale Reads**  
 - [ ] Reads inside a transaction are not guaranteed to see writes by other committed transactions or non-transactional writes and can return old(stale) data  
 - [ ] To avoid stale reads inside transactions for a single document, you can use the db.collection.findOneAndUpdate() method  
   
- 
-**Causal Consistency**  
-
-- [ ] If an operation logically depends on a preceding operation: _causal relationship_  
-- [ ] With _causally consistent sessions_, MongoDB executes operations in an order that respect their relationships  
-- [ ] To provide causal consistency, MongoDB 3.6+ enables causal consistency in _client sessions_
-- [ ] For causally related operations:  
-1. A client starts a client session
-2. As the client issues reads and writes, includes the session information with each operation
-3. For each read/write associated with the session, MongoDB returns the operation and cluster time
-4. The associated client session tracks these two times
-   
-> **Operations within a causally consistent session are not isolated from operations outside the session. If a concurrent write operation interleaves between the session's write and read operations, the session's read operation may return results that reflect a write operation that occurred after the session's write operation**  
-
-
-			
-##### ATOMICITY
-- [ ] A write is atomic on the level of a single document, even if the operation modifies multiple embedded documents within a single document
-- [ ] All write operations in memory 
-- [ ] Will not be written to disk until the entire transaction is committed -> size of the transaction must fit in memory  
-*There is one case that atomicity of transactions is not honored..  
-*There is another case that atomicity may be violated if a transaction operates.. 
-
-- [ ] When a transaction writes to multiple shards, not all outside read operations need to wait for the result of the committed transaction to be visible across the shards. For example, if a transaction is committed and write 1 is visible on shard A but write 2 is not yet visible on shard B, an outside read at read concern "local" can read the results of write 1 without seeing write 2.  
-
-
-				
-##### ISOLATION
-Three isolation models are supported in WiredTiger, from weaker to stronger:  
-
-- [ ] **read-uncommitted:** Transactions can see changes made by other transactions before those transactions are committed. Dirty reads, non-repeatable reads and phantoms are possible.  
-- [ ] **read-committed:** Transactions cannot see changes made by other transactions before those transactions are committed. Dirty reads are not possible; non-repeatable reads and phantoms are possible. Committed changes from concurrent transactions become visible periodically during the lifecycle of the transaction.  
-- [x] **snapshot:** Transactions read the versions of records committed before the transaction started. Dirty reads and non-repeatable reads are not possible; _phantoms are possible_. Snapshot isolation is the default isolation level, and all updates must be done using snapshot isolation.  
-
-![alt text](image-19.png)  
-
-![alt text](image-21.png)  
-
-> "A phantom read anomália akkor történik, amikor egy tranzakcióban kétszer selectelünk egy tartományt valamilyen where feltétel szerint, és a két select között egy másik tranzakció sikeresen beilleszt vagy eltávolít rekordokat abból a tartományból, ami megfelel a where feltételnek, így az első select eredménye valójában érvénytelenné válik. Ez az alkalmazás számára csak akkor probléma, ha ezen leválogatás szerint akarunk döntést hozni. Azok az olvasások, amik pl. PK alapján történnek immunisak erre az anomáliára."  
-
-
-Snapshot isolation is a strong guarantee, but does not always guarantee behavior equivalent to a single-threaded execution of the transactions. (The slightly stronger model that does is known as serializable isolation.) Given two concurrent transactions T1 and T2 running under snapshot isolation, if T1 reads data items updated by T2 and T2 reads data items updated by T1, but the data they update does not overlap, both may commit. But because each read the data from before they both started, not the other's output, the execution is not equivalent to either running strictly before the other and the resulting state may be one that no serial execution could produce. This behavior is called **write skew**.  
-
-![alt text](image-20.png)  
-
-> "Mind Alice és Bob olvass a post és post_details táblákat. Bob módosítja a címet, de mivel már ő a szerzője a korábbi módosításnak is, így a post_details updatet kihagyja. Közben Alice is ugyan arra akarja módosítani a címet mint Bob, de ő elvégzi a post_details updatet is mert a korábbi olvasás eredménye szerint nem ő a szerző."  
-
 					  
 ##### VISIBILITY
-To read a key -> traverses all the updates of that key still in memory(linked list with the newest update at the head)   
-				no value is visible -> checks on the disk (version chosen to be written to disk in the last reconciliation)   
-					still invisible -> search the history store to check if there is a version visible to the reader there  
+**To read a key**  
+- [ ] WiredTiger first traverses all the updates of that key still in memory until a visible update is found  
+- [ ] In-memory updates are organized as a singly linked list with the newest update at the head, called the update chain  
+- [ ] If no value is visible on the update chain, it checks the version on the disk image, which is the version that was chosen to be written to disk in the last reconciliation   
+- [ ] If it is still invisible, it will search the history store to check if there is a version visible to the reader there  
 
-##### DURABILITY
-*commit level: If Logging is enabled on the table.   
-After commit -> guaranteed to survive restart  
-				
-*checkpoint level: change survives restart <- included in the last checkpoint(successful)  
-				
-Prepared Transactions:  
-				for implementing distributed transactions through two-phase commit (only work under snapshot isolation)  
-				+phase: prepared phase   
-					before rollback/commit phase  
-				After prepare -> no more read/write on the transaction  
-				A two-phase distributed transaction algorithm can rely on the prepared state to reach consensus among all the nodes for committing  
- 
-			
+
+##### DURABILITY  
+WiredTiger transactions support: 
+- [x] Commit level durability   
+      - [ ] If Logging is enabled on the table 
+      - [ ] After it has been successfully committed, the operation is guaranteed to survive restart  
+- [x] Checkpoint level durability  
+      - [ ] Survives restart only if included in the last checkpoint  
+
 			
 ## Isolation/locking mechanikák
 ### Cassandra	
-Does not use RDBMS ACID transactions with rollback or locking mechanisms, but instead offers atomic, isolated, and durable transactions   
-with eventual/tunable consistency that lets the user decide how strong or eventual they want each transaction's consistency to be  
+- [ ] Does not use RDBMS ACID transactions with rollback or locking mechanisms   
+- [ ] Instead offers atomic, isolated, and durable transactions with eventual/tunable consistency   
+- [ ] Lets the user decide how strong or eventual they want each transaction's consistency to be  
+- [ ] PM: Vomiting Emoji  
+
 			
 ## Skálázhatóság
-### Cassandra
 #### Vertical scalability
-increasing the capacity of a single machine or node (upgrading hardware such as RAM, CPU, storage) However, vertical scalability   
-				can be costly and resource-intensive: acquiring and operating more powerful hardware comes with financial investments  
-				migrating to a new system with increased capacity requires careful planning and effort, especially for transferring large volumes of data  
+- [ ] Increasing capacity of a single machine or node (upgrading hardware such as RAM, CPU, storage) 
+- [ ] Costly and resource-intensive  
+- [ ] Migration requires careful planning + effort 
+- [ ] Especially for large volumes of data  
 		
 #### Horizontal scalability
-adding more machines or nodes, workload is distributed across multiple machines  
-Based on nodes, using lower commodity hardware   
-double capacity/throughput -> double the number of nodes  
-This linear scalability applies essentially indefinitely  
-has become one of Cassandra’s key strengths  
-	
-### MongoDB
-> **MongoDB scales out, while Postgres scales up. MongoDB is a distributed database supporting automatic sharding. For Postgres, people usually scale up the single node postgres first and defer the sharding solution as late as possible. Of course, sharding Postgres is doable.**  
+- [ ] Adding more machines or nodes  
+- [ ] Workload is distributed  
+- [ ] Nodes use lower commodity hardware  
+- [ ] Linear essentially indefinitely  
+- [ ] Double capacity/throughput: double the number of nodes  
+- [ ] One of Cassandra’s key strengths  
 
+### Cassandra
+- [ ] Masterless, P2P  
+- [ ] Any node can provide the exact same functionality as any other node  
 
-
-
+### MongoDB 
+- [ ] Standalone | Primary | Secondary
 
 ## Érdekességek Cassandra oldalról
 
