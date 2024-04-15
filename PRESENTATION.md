@@ -66,7 +66,7 @@ _Sok idő kellett a felismerésig.._
 
 - [ ] Átlátni a világ nyolcadik csodáján  
 - [ ] Datastax (Astra)?  Cassandra?  
-- [ ] Jelenleg Cassandra 5.0, de  BETA1 verzió. Eme verzió egy v
+- [ ] Jelenleg Cassandra 5.0, de  BETA1  
 - [ ] Viszonylag nagy mérföldkő
 - [ ] Bumeráng hatás
 - [ ] ACID
