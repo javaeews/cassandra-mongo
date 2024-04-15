@@ -113,14 +113,24 @@ Published: combination of the Server Side Public License and the Apache License
  - [ ] Monzo (~Revolut)
  - [ ] ING Bank
  - [ ] OTP financial transactions 
- - [ ] Zipkin  
+
 ### MongoDB
  - [ ] MetLife
  - [ ] UPS
  - [ ] New York Times
 
+### Open-Source Projects Using Cassandra  
+> Miért lehetnek fontosak számunkra?  
 
-### Kiegészítés a Cassandra használatát illetően
+ - [ ] https://github.com/filodb/FiloDB  
+ - [ ] https://github.com/kairosdb  
+ - [ ] https://github.com/OpenNMS/newts  
+ - [ ] https://github.com/sfproductlabs/tracker  
+ - [ ] https://github.com/openzipkin/zipkin  
+
+### Kiegészítés a Cassandra használatát illetően  
+> From John Schulz: For the last 20, he's worked on a variety of Open source technologies including MySQL, PostgreSQL, Cassandra, MongoDB, Hadoop, and Hbase. He has been working with Cassandra since 2010.  
+
 
 **Ideal Cassandra use-case:**
  - [ ] Writes >> reads
@@ -137,6 +147,28 @@ Published: combination of the Server Side Public License and the Apache License
  - [ ] Internet of things status + event history
  - [ ] Telematics: IOT for cars and trucks
  - [ ] Email envelopes
+
+**Wrong Use Cases:**  
+
+ - [ ] Tables have multiple access paths. (Example: lots of secondary indexes)
+ - [ ] The application depends on identifying rows with sequential values  
+ - [ ] ACID: go elsewhere
+ - [ ] Aggregates: need to do a lot of them, think another database  
+ - [ ] Joins  
+ - [ ] Locks: no support! (good reason for it) **Don’t try to implement them yourself**.  
+ - [ ] Updates: very good writes, ok reads (updates, deletes: special cases of writes with not immediately obvious consequences)  
+ - [ ] Transactions: no begin/commit. Don’t try to simulate it. Results won’t be pretty
+
+
+**Features that probably shouldn’t be there..**   
+- [ ] Secondary indexes: Not an alternative access path  
+- [ ] Counters: Very expensive, should not be used  
+- [ ] Light weight transactions: Not transactions nor light weight
+- [ ] Batches: Usually good, saves network time, right? In the case of Cassandra not so much  
+
+> Typical real-world partition keys are user id, device id, account number etc. To manage partition size, often a time modifier like year and month or year are added to the partition key.  
+
+
 	
 ![alt text](image-18.png)  
 Forrás: <https://www.cflowapps.com/bpm-healthcare>  
