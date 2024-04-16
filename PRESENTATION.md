@@ -269,7 +269,7 @@ SELECT amount FROM credit_card_transactions WHERE credit_card_no = <credit_card_
 
 
 #### Monzo(~Revolut):
-- [ ] Cassandra as a Core Database [PM: Bátor vállalkozás] 
+- [ ] Cassandra as a Core Database   
 
 > "We made the decision early on to use Cassandra as our main database for services, with each service operating under its own keyspace. This strict isolation between keyspaces meant that a service could not directly read data from another service."
 
