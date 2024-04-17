@@ -1,0 +1,215 @@
+docker exec -it cassandra1 nodetool datapaths
+Keyspace: system_traces
+	Table: sessions
+	Paths:
+		/var/lib/cassandra/data/system_traces/sessions-c5e99f1686773914b17e960613512345
+
+	Table: events
+	Paths:
+		/var/lib/cassandra/data/system_traces/events-8826e8e9e16a372887533bc1fc713c25
+
+Keyspace: zipkin2
+	Table: remote_service_by_service
+	Paths:
+		/var/lib/cassandra/data/zipkin2/remote_service_by_service-b41cb380fca411eeaf89d5a832a08be9
+
+	Table: autocomplete_tags
+	Paths:
+		/var/lib/cassandra/data/zipkin2/autocomplete_tags-bf951a40fca411eeaf89d5a832a08be9
+
+	Table: trace_by_service_remote_service
+	Paths:
+		/var/lib/cassandra/data/zipkin2/trace_by_service_remote_service-9c0603a0fca411eeaf89d5a832a08be9
+
+	Table: dependency
+	Paths:
+		/var/lib/cassandra/data/zipkin2/dependency-78097aa0fca311eeaf89d5a832a08be9
+
+	Table: span_by_service
+	Paths:
+		/var/lib/cassandra/data/zipkin2/span_by_service-ab093ed0fca411eeaf89d5a832a08be9
+
+	Table: trace_by_service_span
+	Paths:
+		/var/lib/cassandra/data/zipkin2/trace_by_service_span-8944af00fca411eeaf89d5a832a08be9
+
+	Table: span
+	Paths:
+		/var/lib/cassandra/data/zipkin2/span-6692ce70fca311eeaf89d5a832a08be9
+
+Keyspace: easy_cass_stress
+	Table: sensor_data
+	Paths:
+		/var/lib/cassandra/data/easy_cass_stress/sensor_data-c76eea90fcb111eea77ad121b10f6874
+
+Keyspace: system
+	Table: available_ranges_v2
+	Paths:
+		/var/lib/cassandra/data/system/available_ranges_v2-4224a0882ac93d0c889dfbb5f0facda0
+
+	Table: paxos_repair_history
+	Paths:
+		/var/lib/cassandra/data/system/paxos_repair_history-ecb8666740b23316bb91e612c8047457
+
+	Table: built_views
+	Paths:
+		/var/lib/cassandra/data/system/built_views-4b3c50a9ea873d7691016dbc9c38494a
+
+	Table: sstable_activity
+	Paths:
+		/var/lib/cassandra/data/system/sstable_activity-5a1ff267ace03f128563cfae6103c65e
+
+	Table: view_builds_in_progress
+	Paths:
+		/var/lib/cassandra/data/system/view_builds_in_progress-6c22df66c3bd3df6b74d21179c6a9fe9
+
+	Table: peers_v2
+	Paths:
+		/var/lib/cassandra/data/system/peers_v2-c4325fbb8e5e3bafbd070f9250ed818e
+
+	Table: table_estimates
+	Paths:
+		/var/lib/cassandra/data/system/table_estimates-176c39cdb93d33a5a2188eb06a56f66e
+
+	Table: compaction_history
+	Paths:
+		/var/lib/cassandra/data/system/compaction_history-b4dbb7b4dc493fb5b3bfce6e434832ca
+
+	Table: prepared_statements
+	Paths:
+		/var/lib/cassandra/data/system/prepared_statements-18a9c2576a0c3841ba718cd529849fef
+
+	Table: peers
+	Paths:
+		/var/lib/cassandra/data/system/peers-37f71aca7dc2383ba70672528af04d4f
+
+	Table: sstable_activity_v2
+	Paths:
+		/var/lib/cassandra/data/system/sstable_activity_v2-62efe31f3be8310c8d298963439c1288
+
+	Table: IndexInfo
+	Paths:
+		/var/lib/cassandra/data/system/IndexInfo-9f5c6374d48532299a0a5094af9ad1e3
+
+	Table: transferred_ranges_v2
+	Paths:
+		/var/lib/cassandra/data/system/transferred_ranges_v2-1ff78f1a7df13a2aa9986f4932270af5
+
+	Table: local
+	Paths:
+		/var/lib/cassandra/data/system/local-7ad54392bcdd35a684174e047860b377
+
+	Table: peer_events_v2
+	Paths:
+		/var/lib/cassandra/data/system/peer_events_v2-0e65065fe40138ed9507b9213fae8d11
+
+	Table: batches
+	Paths:
+		/var/lib/cassandra/data/system/batches-919a4bc57a333573b03e13fc3f68b465
+
+	Table: repairs
+	Paths:
+		/var/lib/cassandra/data/system/repairs-a3d277d1cfaf36f5a2a738d5eea9ad6a
+
+	Table: available_ranges
+	Paths:
+		/var/lib/cassandra/data/system/available_ranges-c539fcabd65a31d18133d25605643ee3
+
+	Table: paxos
+	Paths:
+		/var/lib/cassandra/data/system/paxos-b7b7f0c2fd0a34108c053ef614bb7c2d
+
+	Table: peer_events
+	Paths:
+		/var/lib/cassandra/data/system/peer_events-59dfeaea8db2334191ef109974d81484
+
+	Table: transferred_ranges
+	Paths:
+		/var/lib/cassandra/data/system/transferred_ranges-6cad20f7d4f53af2b6e20da33c6c1f83
+
+	Table: size_estimates
+	Paths:
+		/var/lib/cassandra/data/system/size_estimates-618f817b005f3678b8a453f3930b8e86
+
+	Table: top_partitions
+	Paths:
+		/var/lib/cassandra/data/system/top_partitions-7e5a361c317c351fb15fffd8afd3dd4b
+
+Keyspace: system_distributed
+	Table: partition_denylist
+	Paths:
+		/var/lib/cassandra/data/system_distributed/partition_denylist-d6123acc864934969d4ef3fe39a6018b
+
+	Table: parent_repair_history
+	Paths:
+		/var/lib/cassandra/data/system_distributed/parent_repair_history-deabd734b99d3b9c92e5fd92eb5abf14
+
+	Table: view_build_status
+	Paths:
+		/var/lib/cassandra/data/system_distributed/view_build_status-5582b59f8e4e35e1b9133acada51eb04
+
+	Table: repair_history
+	Paths:
+		/var/lib/cassandra/data/system_distributed/repair_history-759fffad624b318180eefa9a52d1f627
+
+Keyspace: system_schema
+	Table: dropped_columns
+	Paths:
+		/var/lib/cassandra/data/system_schema/dropped_columns-5e7583b5f3f43af19a39b7e1d6f5f11f
+
+	Table: tables
+	Paths:
+		/var/lib/cassandra/data/system_schema/tables-afddfb9dbc1e30688056eed6c302ba09
+
+	Table: types
+	Paths:
+		/var/lib/cassandra/data/system_schema/types-5a8b1ca866023f77a0459273d308917a
+
+	Table: functions
+	Paths:
+		/var/lib/cassandra/data/system_schema/functions-96489b7980be3e14a70166a0b9159450
+
+	Table: indexes
+	Paths:
+		/var/lib/cassandra/data/system_schema/indexes-0feb57ac311f382fba6d9024d305702f
+
+	Table: keyspaces
+	Paths:
+		/var/lib/cassandra/data/system_schema/keyspaces-abac5682dea631c5b535b3d6cffd0fb6
+
+	Table: columns
+	Paths:
+		/var/lib/cassandra/data/system_schema/columns-24101c25a2ae3af787c1b40ee1aca33f
+
+	Table: aggregates
+	Paths:
+		/var/lib/cassandra/data/system_schema/aggregates-924c55872e3a345bb10c12f37c1ba895
+
+	Table: triggers
+	Paths:
+		/var/lib/cassandra/data/system_schema/triggers-4df70b666b05325195a132b54005fd48
+
+	Table: views
+	Paths:
+		/var/lib/cassandra/data/system_schema/views-9786ac1cdd583201a7cdad556410c985
+
+Keyspace: system_auth
+	Table: role_permissions
+	Paths:
+		/var/lib/cassandra/data/system_auth/role_permissions-3afbe79f219431a7add7f5ab90d8ec9c
+
+	Table: network_permissions
+	Paths:
+		/var/lib/cassandra/data/system_auth/network_permissions-d46780c22f1c3db9b4c1b8d9fbc0cc23
+
+	Table: resource_role_permissons_index
+	Paths:
+		/var/lib/cassandra/data/system_auth/resource_role_permissons_index-5f2fbdad91f13946bd25d5da3a5c35ec
+
+	Table: roles
+	Paths:
+		/var/lib/cassandra/data/system_auth/roles-5bc52802de2535edaeab188eecebb090
+
+	Table: role_members
+	Paths:
+		/var/lib/cassandra/data/system_auth/role_members-0ecdaa87f8fb3e6088d174fb36fe5c0d

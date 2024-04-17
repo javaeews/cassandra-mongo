@@ -1,0 +1,320 @@
+martonb@Marton-MacBook-Pro cassandra-mongo % docker compose up -d
+[+] Running 3/3
+ ✔ Container cassandra1  Started                                                                                                                                                                               0.0s 
+ ✔ Container cassandra2  Started                                                                                                                                                                               0.0s 
+ ✔ Container cassandra3  Started                                                                                                                                                                               0.0s 
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool status
+Datacenter: DC1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load        Tokens  Owns  Host ID                               Rack 
+UN  172.21.0.4  528.86 MiB  128     ?     dc38c94c-36b4-4814-9132-f2ca269e3622  RACK1
+UN  172.21.0.2  528.26 MiB  128     ?     1b6fa79a-6f9c-4666-8861-6296fd144c80  RACK1
+UN  172.21.0.3  528.89 MiB  128     ?     004c3e03-7923-40f9-9119-a5db4032256d  RACK1
+
+Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool info  
+ID                     : 1b6fa79a-6f9c-4666-8861-6296fd144c80
+Gossip active          : true
+Native Transport active: true
+Load                   : 528.26 MiB
+Generation No          : 1713355035
+Uptime (seconds)       : 818
+Heap Memory (MB)       : 2752.40 / 4412.00
+Off Heap Memory (MB)   : 2.16
+Data Center            : DC1
+Rack                   : RACK1
+Exceptions             : 0
+Key Cache              : entries 12437, size 1.04 MiB, capacity 100 MiB, 308 hits, 12791 requests, 0.024 recent hit rate, 14400 save period in seconds
+Row Cache              : entries 0, size 0 bytes, capacity 0 bytes, 0 hits, 0 requests, NaN recent hit rate, 0 save period in seconds
+Counter Cache          : entries 0, size 0 bytes, capacity 50 MiB, 0 hits, 0 requests, NaN recent hit rate, 7200 save period in seconds
+Network Cache          : size 8 MiB, overflow size: 0 bytes, capacity 128 MiB
+Percent Repaired       : 0.0%
+Token                  : (invoke with -T/--tokens to see all 128 tokens)
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool info
+ID                     : 1b6fa79a-6f9c-4666-8861-6296fd144c80
+Gossip active          : true
+Native Transport active: true
+Load                   : 638.18 MiB
+Generation No          : 1713355035
+Uptime (seconds)       : 927
+Heap Memory (MB)       : 2956.66 / 4412.00
+Off Heap Memory (MB)   : 2.84
+Data Center            : DC1
+Rack                   : RACK1
+Exceptions             : 0
+Key Cache              : entries 21811, size 1.83 MiB, capacity 100 MiB, 389 hits, 22300 requests, 0.017 recent hit rate, 14400 save period in seconds
+Row Cache              : entries 0, size 0 bytes, capacity 0 bytes, 0 hits, 0 requests, NaN recent hit rate, 0 save period in seconds
+Counter Cache          : entries 0, size 0 bytes, capacity 50 MiB, 0 hits, 0 requests, NaN recent hit rate, 7200 save period in seconds
+Network Cache          : size 8 MiB, overflow size: 0 bytes, capacity 128 MiB
+Percent Repaired       : 0.0%
+Token                  : (invoke with -T/--tokens to see all 128 tokens)
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool -T info
+nodetool: Found unexpected parameters: [-T, info]
+See 'nodetool help' or 'nodetool help <command>'.
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool info -T
+ID                     : 1b6fa79a-6f9c-4666-8861-6296fd144c80
+Gossip active          : true
+Native Transport active: true
+Load                   : 748.11 MiB
+Generation No          : 1713355035
+Uptime (seconds)       : 1010
+Heap Memory (MB)       : 892.89 / 4412.00
+Off Heap Memory (MB)   : 3.52
+Data Center            : DC1
+Rack                   : RACK1
+Exceptions             : 0
+Key Cache              : entries 30488, size 2.56 MiB, capacity 100 MiB, 487 hits, 31142 requests, 0.016 recent hit rate, 14400 save period in seconds
+Row Cache              : entries 0, size 0 bytes, capacity 0 bytes, 0 hits, 0 requests, NaN recent hit rate, 0 save period in seconds
+Counter Cache          : entries 0, size 0 bytes, capacity 50 MiB, 0 hits, 0 requests, NaN recent hit rate, 7200 save period in seconds
+Network Cache          : size 8 MiB, overflow size: 0 bytes, capacity 128 MiB
+Percent Repaired       : 0.0%
+Token                  : -9171631028090123523
+Token                  : -9038402173516438239
+Token                  : -8941634781252210858
+Token                  : -8774585607161478821
+Token                  : -8600749403620633878
+Token                  : -8460269762965034353
+Token                  : -8252574977190996194
+Token                  : -8086024335482901638
+Token                  : -7950415612351357772
+Token                  : -7853588221298361830
+Token                  : -7727510402724814233
+Token                  : -7634773070090044818
+Token                  : -7482124310448920277
+Token                  : -7338109612448223224
+Token                  : -7229651885546424017
+Token                  : -7078479493990301624
+Token                  : -6910079919538653330
+Token                  : -6784884164126772295
+Token                  : -6630147674665853015
+Token                  : -6530670966634178146
+Token                  : -6370259244394190270
+Token                  : -6155076956365712003
+Token                  : -5984737187776248332
+Token                  : -5810826287919961339
+Token                  : -5703490009625333148
+Token                  : -5564287404323893996
+Token                  : -5474657925830390034
+Token                  : -5337758150460968453
+Token                  : -5170052371971487867
+Token                  : -5057560877249383019
+Token                  : -4885165362178041692
+Token                  : -4779921999006571761
+Token                  : -4607448109390394859
+Token                  : -4456130662516365348
+Token                  : -4354549738380614198
+Token                  : -4197397034165009746
+Token                  : -4043464410946149213
+Token                  : -3943116071616525729
+Token                  : -3787701889854743790
+Token                  : -3675282247182542583
+Token                  : -3516150998698182599
+Token                  : -3330408405004155866
+Token                  : -3202744459656572865
+Token                  : -3003645456493339821
+Token                  : -2818895219950751105
+Token                  : -2671774351207020843
+Token                  : -2475769754239375494
+Token                  : -2353873951125138259
+Token                  : -2162062416818339831
+Token                  : -1978935481164965495
+Token                  : -1831239401683734849
+Token                  : -1690293978033237277
+Token                  : -1603860047152069334
+Token                  : -1468575661260582703
+Token                  : -1325302026359720492
+Token                  : -1231506121304437603
+Token                  : -1093129079642509801
+Token                  : -990893926295177625
+Token                  : -823981719238067772
+Token                  : -677209109759202871
+Token                  : -571779783644470434
+Token                  : -421866589347292518
+Token                  : -329885864500813358
+Token                  : -160005504964404791
+Token                  : 45684313583991495
+Token                  : 173685824060085409
+Token                  : 332509116322950899
+Token                  : 442856545332698959
+Token                  : 584464514272296763
+Token                  : 693339125940418186
+Token                  : 857845899778022224
+Token                  : 1016376200347473608
+Token                  : 1126182470155337897
+Token                  : 1318626874160271206
+Token                  : 1529332157338123123
+Token                  : 1675517832390373018
+Token                  : 1814188634243101330
+Token                  : 1917672607802179115
+Token                  : 2088826414181558654
+Token                  : 2225600619095851970
+Token                  : 2336121967938612180
+Token                  : 2492677085724624164
+Token                  : 2588164134821682222
+Token                  : 2751273713615952557
+Token                  : 2892620803849854298
+Token                  : 3006569306852633364
+Token                  : 3158325480282588559
+Token                  : 3342256358899345955
+Token                  : 3487189406326846198
+Token                  : 3616833957997448310
+Token                  : 3705702406292388668
+Token                  : 3879964327336195660
+Token                  : 4034908936604342530
+Token                  : 4143202850292851512
+Token                  : 4294414274121836681
+Token                  : 4405270439583577984
+Token                  : 4566562213774447856
+Token                  : 4730759511393590711
+Token                  : 4839636948535984133
+Token                  : 5012952704073482160
+Token                  : 5193440163233960733
+Token                  : 5326365156502702980
+Token                  : 5484923719594597508
+Token                  : 5594273850118287745
+Token                  : 5810082219455039828
+Token                  : 6001302701954262377
+Token                  : 6140156630167244921
+Token                  : 6354545667166383186
+Token                  : 6494452122135652496
+Token                  : 6593720709066575204
+Token                  : 6777446462533575327
+Token                  : 6965874214984865927
+Token                  : 7080532387205309001
+Token                  : 7219216308589415755
+Token                  : 7310458134396452726
+Token                  : 7469587037252526592
+Token                  : 7573227408461202801
+Token                  : 7730928279548762887
+Token                  : 7861616560128395031
+Token                  : 7952024225700546661
+Token                  : 8093176032433373590
+Token                  : 8245706713722183376
+Token                  : 8367451015047473965
+Token                  : 8565952280480724094
+Token                  : 8714511049678925537
+Token                  : 8846468115109340091
+Token                  : 8935810353376866671
+Token                  : 9131239634053477033
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool status 
+Datacenter: DC1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load        Tokens  Owns  Host ID                               Rack 
+UN  172.21.0.4  749 MiB     128     ?     dc38c94c-36b4-4814-9132-f2ca269e3622  RACK1
+UN  172.21.0.2  748.11 MiB  128     ?     1b6fa79a-6f9c-4666-8861-6296fd144c80  RACK1
+UN  172.21.0.3  749.04 MiB  128     ?     004c3e03-7923-40f9-9119-a5db4032256d  RACK1
+
+Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool status
+Datacenter: DC1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load      Tokens  Owns  Host ID                               Rack 
+UN  172.21.0.4  1.44 GiB  128     ?     dc38c94c-36b4-4814-9132-f2ca269e3622  RACK1
+UN  172.21.0.2  1.44 GiB  128     ?     1b6fa79a-6f9c-4666-8861-6296fd144c80  RACK1
+UN  172.21.0.3  1.44 GiB  128     ?     004c3e03-7923-40f9-9119-a5db4032256d  RACK1
+
+Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool status
+Datacenter: DC1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load      Tokens  Owns  Host ID                               Rack 
+UN  172.21.0.4  1.57 GiB  128     ?     dc38c94c-36b4-4814-9132-f2ca269e3622  RACK1
+UN  172.21.0.2  1.57 GiB  128     ?     1b6fa79a-6f9c-4666-8861-6296fd144c80  RACK1
+UN  172.21.0.3  1.57 GiB  128     ?     004c3e03-7923-40f9-9119-a5db4032256d  RACK1
+
+Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool info   
+ID                     : 1b6fa79a-6f9c-4666-8861-6296fd144c80
+Gossip active          : true
+Native Transport active: true
+Load                   : 1.57 GiB
+Generation No          : 1713355035
+Uptime (seconds)       : 2146
+Heap Memory (MB)       : 1737.30 / 4412.00
+Off Heap Memory (MB)   : 2.21
+Data Center            : DC1
+Rack                   : RACK1
+Exceptions             : 0
+Key Cache              : entries 71594, size 6.01 MiB, capacity 100 MiB, 5377 hits, 189617 requests, 0.028 recent hit rate, 14400 save period in seconds
+Row Cache              : entries 0, size 0 bytes, capacity 0 bytes, 0 hits, 0 requests, NaN recent hit rate, 0 save period in seconds
+Counter Cache          : entries 0, size 0 bytes, capacity 50 MiB, 0 hits, 0 requests, NaN recent hit rate, 7200 save period in seconds
+Network Cache          : size 8 MiB, overflow size: 0 bytes, capacity 128 MiB
+Percent Repaired       : 0.0%
+Token                  : (invoke with -T/--tokens to see all 128 tokens)
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool info
+ID                     : 1b6fa79a-6f9c-4666-8861-6296fd144c80
+Gossip active          : true
+Native Transport active: true
+Load                   : 1.57 GiB
+Generation No          : 1713355035
+Uptime (seconds)       : 2183
+Heap Memory (MB)       : 1751.81 / 4412.00
+Off Heap Memory (MB)   : 2.21
+Data Center            : DC1
+Rack                   : RACK1
+Exceptions             : 0
+Key Cache              : entries 71594, size 6.01 MiB, capacity 100 MiB, 5377 hits, 189617 requests, 0.028 recent hit rate, 14400 save period in seconds
+Row Cache              : entries 0, size 0 bytes, capacity 0 bytes, 0 hits, 0 requests, NaN recent hit rate, 0 save period in seconds
+Counter Cache          : entries 0, size 0 bytes, capacity 50 MiB, 0 hits, 0 requests, NaN recent hit rate, 7200 save period in seconds
+Network Cache          : size 8 MiB, overflow size: 0 bytes, capacity 128 MiB
+Percent Repaired       : 0.0%
+Token                  : (invoke with -T/--tokens to see all 128 tokens)
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % 
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool info
+ID                     : 1b6fa79a-6f9c-4666-8861-6296fd144c80
+Gossip active          : true
+Native Transport active: true
+Load                   : 1.57 GiB
+Generation No          : 1713355035
+Uptime (seconds)       : 2245
+Heap Memory (MB)       : 1769.68 / 4412.00
+Off Heap Memory (MB)   : 2.21
+Data Center            : DC1
+Rack                   : RACK1
+Exceptions             : 0
+Key Cache              : entries 71594, size 6.01 MiB, capacity 100 MiB, 5377 hits, 189617 requests, 0.028 recent hit rate, 14400 save period in seconds
+Row Cache              : entries 0, size 0 bytes, capacity 0 bytes, 0 hits, 0 requests, NaN recent hit rate, 0 save period in seconds
+Counter Cache          : entries 0, size 0 bytes, capacity 50 MiB, 0 hits, 0 requests, NaN recent hit rate, 7200 save period in seconds
+Network Cache          : size 8 MiB, overflow size: 0 bytes, capacity 128 MiB
+Percent Repaired       : 0.0%
+Token                  : (invoke with -T/--tokens to see all 128 tokens)
+martonb@Marton-MacBook-Pro cassandra-mongo % docker exec -it cassandra1 nodetool info
+ID                     : 1b6fa79a-6f9c-4666-8861-6296fd144c80
+Gossip active          : true
+Native Transport active: true
+Load                   : 1.57 GiB
+Generation No          : 1713355035
+Uptime (seconds)       : 2384
+Heap Memory (MB)       : 1802.68 / 4412.00
+Off Heap Memory (MB)   : 2.21
+Data Center            : DC1
+Rack                   : RACK1
+Exceptions             : 0
+Key Cache              : entries 71594, size 6.01 MiB, capacity 100 MiB, 5377 hits, 189617 requests, 0.028 recent hit rate, 14400 save period in seconds
+Row Cache              : entries 0, size 0 bytes, capacity 0 bytes, 0 hits, 0 requests, NaN recent hit rate, 0 save period in seconds
+Counter Cache          : entries 0, size 0 bytes, capacity 50 MiB, 0 hits, 0 requests, NaN recent hit rate, 7200 save period in seconds
+Network Cache          : size 8 MiB, overflow size: 0 bytes, capacity 128 MiB
+Percent Repaired       : 0.0%
+Token                  : (invoke with -T/--tokens to see all 128 tokens)
+martonb@Marton-MacBook-Pro cassandra-mongo % 
