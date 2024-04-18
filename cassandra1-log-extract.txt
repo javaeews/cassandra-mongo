@@ -1,0 +1,459 @@
+Node configuration:
+[
+allocate_tokens_for_keyspace=null; 
+allocate_tokens_for_local_replication_factor=3; 
+allow_extra_insecure_udfs=false; 
+allow_filtering_enabled=true; 
+allow_insecure_udfs=false; 
+audit_logging_options=AuditLogOptions{enabled=false, logger='BinAuditLogger', included_keyspaces='', excluded_keyspaces='system,system_schema,system_virtual_schema', included_categories='', excluded_categories='', included_users='', excluded_users='', audit_logs_dir='/opt/cassandra/logs/audit', archive_command='', roll_cycle='HOURLY', block=true, max_queue_weight=268435456, max_log_size=17179869184, max_archive_retries=10};
+auth_cache_warming_enabled=false; 
+auth_read_consistency_level=LOCAL_QUORUM; 
+auth_write_consistency_level=EACH_QUORUM; 
+authenticator=AllowAllAuthenticator; 
+authorizer=AllowAllAuthorizer; 
+auto_bootstrap=true; 
+auto_hints_cleanup_enabled=false; 
+auto_optimise_full_repair_streams=false; 
+auto_optimise_inc_repair_streams=false; 
+auto_optimise_preview_repair_streams=false; 
+auto_snapshot=true; 
+auto_snapshot_ttl=null; 
+autocompaction_on_startup_enabled=true; 
+automatic_sstable_upgrade=false; 
+available_processors=-1; 
+back_pressure_enabled=false; 
+back_pressure_strategy=null; 
+batch_size_fail_threshold=50KiB; 
+batch_size_warn_threshold=5KiB; 
+batchlog_replay_throttle=1024KiB; 
+block_for_peers_in_remote_dcs=false; 
+block_for_peers_timeout_in_secs=10; 
+broadcast_address=172.21.0.2; 
+broadcast_rpc_address=172.21.0.2; 
+buffer_pool_use_heap_if_exhausted=false; 
+cache_load_timeout=30s; 
+cas_contention_timeout=1000ms; 
+cdc_block_writes=true; 
+cdc_enabled=false; 
+cdc_free_space_check_interval=250ms; 
+cdc_raw_directory=null; 
+cdc_total_space=0MiB; 
+check_for_duplicate_rows_during_compaction=true; 
+check_for_duplicate_rows_during_reads=true; 
+client_encryption_options=<REDACTED>; 
+client_error_reporting_exclusions=SubnetGroups{subnets=[]}; 
+cluster_name=MyTestCluster; 
+collection_size_fail_threshold=null; 
+collection_size_warn_threshold=null; 
+column_index_cache_size=2KiB; 
+column_index_size=64KiB; 
+columns_per_table_fail_threshold=-1; 
+columns_per_table_warn_threshold=-1; 
+commit_failure_policy=stop; 
+commitlog_compression=null; 
+commitlog_directory=null; 
+commitlog_max_compression_buffers_in_pool=3; 
+commitlog_periodic_queue_size=-1; 
+commitlog_segment_size=32MiB; 
+commitlog_sync=periodic; 
+commitlog_sync_batch_window_in_ms=NaN; 
+commitlog_sync_group_window=0ms; 
+commitlog_sync_period=10000ms; 
+commitlog_total_space=null; 
+compact_tables_enabled=true; 
+compaction_large_partition_warning_threshold=100MiB; 
+compaction_throughput=64MiB/s; 
+compaction_tombstone_warning_threshold=100000; 
+concurrent_compactors=null; 
+concurrent_counter_writes=32; 
+concurrent_materialized_view_builders=1; 
+concurrent_materialized_view_writes=32; 
+concurrent_reads=32; 
+concurrent_replicates=null; 
+concurrent_validations=0; 
+concurrent_writes=32; 
+consecutive_message_errors_threshold=1; 
+coordinator_read_size_fail_threshold=null; 
+coordinator_read_size_warn_threshold=null; 
+corrupted_tombstone_strategy=disabled; 
+counter_cache_keys_to_save=2147483647; 
+counter_cache_save_period=7200s; 
+counter_cache_size=null; 
+counter_write_request_timeout=5000ms; 
+credentials_cache_active_update=false; 
+credentials_cache_max_entries=1000; 
+credentials_update_interval=null; 
+credentials_validity=2000ms; 
+data_disk_usage_max_disk_size=null; 
+data_disk_usage_percentage_fail_threshold=-1; 
+data_disk_usage_percentage_warn_threshold=-1; 
+default_keyspace_rf=1; 
+denylist_consistency_level=QUORUM; 
+denylist_initial_load_retry=5s; 
+denylist_max_keys_per_table=1000; 
+denylist_max_keys_total=10000; 
+denylist_range_reads_enabled=true; 
+denylist_reads_enabled=true; 
+denylist_refresh=600s; 
+denylist_writes_enabled=true; 
+diagnostic_events_enabled=false; 
+disk_access_mode=auto; 
+disk_failure_policy=stop; 
+disk_optimization_estimate_percentile=0.95; 
+disk_optimization_page_cross_chance=0.1; 
+disk_optimization_strategy=ssd; 
+drop_compact_storage_enabled=false; 
+drop_truncate_table_enabled=true; 
+dynamic_snitch=true; 
+dynamic_snitch_badness_threshold=1.0; 
+dynamic_snitch_reset_interval=600000ms; 
+dynamic_snitch_update_interval=100ms; 
+endpoint_snitch=GossipingPropertyFileSnitch; 
+entire_sstable_inter_dc_stream_throughput_outbound=24MiB/s; 
+entire_sstable_stream_throughput_outbound=24MiB/s; 
+failure_detector=FailureDetector; 
+fields_per_udt_fail_threshold=-1; 
+fields_per_udt_warn_threshold=-1; 
+file_cache_enabled=false; 
+file_cache_round_up=null; 
+file_cache_size=null; 
+flush_compression=fast; 
+force_new_prepared_statement_behaviour=false; 
+full_query_logging_options=FullQueryLoggerOptions{log_dir='', archive_command='', roll_cycle='HOURLY', block=true, max_queue_weight=268435456, max_log_size=17179869184}; 
+gc_log_threshold=200ms; 
+gc_warn_threshold=1s; 
+group_by_enabled=true; 
+hint_window_persistent_enabled=true; 
+hinted_handoff_disabled_datacenters=[]; 
+hinted_handoff_enabled=true; 
+hinted_handoff_throttle=1024KiB; 
+hints_compression=null; 
+hints_directory=null; 
+hints_flush_period=10000ms; 
+ideal_consistency_level=null; 
+in_select_cartesian_product_fail_threshold=-1; 
+in_select_cartesian_product_warn_threshold=-1; 
+incremental_backups=false; 
+index_summary_capacity=null; 
+index_summary_resize_interval=60m; 
+initial_range_tombstone_list_allocation_size=1; 
+initial_token=null; 
+inter_dc_stream_throughput_outbound=24MiB/s; 
+inter_dc_tcp_nodelay=false; 
+internode_application_receive_queue_capacity=4MiB; 
+internode_application_receive_queue_reserve_endpoint_capacity=128MiB; 
+internode_application_receive_queue_reserve_global_capacity=512MiB; 
+internode_application_send_queue_capacity=4MiB; 
+internode_application_send_queue_reserve_endpoint_capacity=128MiB; 
+internode_application_send_queue_reserve_global_capacity=512MiB; 
+internode_authenticator=null; internode_compression=dc; 
+internode_error_reporting_exclusions=SubnetGroups{subnets=[]}; 
+internode_max_message_size=null; 
+internode_socket_receive_buffer_size=0B; 
+internode_socket_send_buffer_size=0B; 
+internode_streaming_tcp_user_timeout=300s; 
+internode_tcp_connect_timeout=2s; 
+internode_tcp_user_timeout=30s; 
+internode_timeout=true; 
+items_per_collection_fail_threshold=-1; 
+items_per_collection_warn_threshold=-1; 
+key_cache_keys_to_save=2147483647; 
+key_cache_migrate_during_compaction=true; 
+key_cache_save_period=4h; 
+key_cache_size=null; 
+keyspace_count_warn_threshold=40; 
+keyspaces_fail_threshold=-1; 
+keyspaces_warn_threshold=-1; 
+listen_address=172.21.0.2; 
+listen_interface=null; 
+listen_interface_prefer_ipv6=false; 
+listen_on_broadcast_address=false; 
+local_read_size_fail_threshold=null; 
+local_read_size_warn_threshold=null; 
+local_system_data_file_directory=null; 
+materialized_views_enabled=false; 
+materialized_views_per_table_fail_threshold=-1; 
+materialized_views_per_table_warn_threshold=-1; 
+max_concurrent_automatic_sstable_upgrades=1; 
+max_hint_window=3h; max_hints_delivery_threads=2; 
+max_hints_file_size=128MiB; 
+max_hints_size_per_host=0B; 
+max_mutation_size=null; 
+max_streaming_retries=3; 
+max_top_size_partition_count=10; 
+max_top_tombstone_partition_count=10; 
+max_value_size=256MiB; 
+memtable=null; 
+memtable_allocation_type=heap_buffers; 
+memtable_cleanup_threshold=null; 
+memtable_flush_writers=0; 
+memtable_heap_space=null; 
+memtable_offheap_space=null; 
+min_free_space_per_drive=50MiB; 
+min_tracked_partition_size=1MiB; 
+min_tracked_partition_tombstone_count=5000; 
+minimum_replication_factor_fail_threshold=-1; 
+minimum_replication_factor_warn_threshold=-1; 
+native_transport_allow_older_protocols=true; 
+native_transport_flush_in_batches_legacy=false; 
+native_transport_idle_timeout=0ms; 
+native_transport_max_concurrent_connections=-1; 
+native_transport_max_concurrent_connections_per_ip=-1; 
+native_transport_max_frame_size=16MiB; 
+native_transport_max_negotiable_protocol_version=null; 
+native_transport_max_request_data_in_flight=null; 
+native_transport_max_request_data_in_flight_per_ip=null; 
+native_transport_max_requests_per_second=1000000; 
+native_transport_max_threads=128; 
+native_transport_port=9042; 
+native_transport_port_ssl=null; 
+native_transport_rate_limiting_enabled=false; 
+native_transport_receive_queue_capacity=1MiB; 
+network_authorizer=AllowAllNetworkAuthorizer; 
+networking_cache_size=null; 
+num_tokens=128; 
+otc_backlog_expiration_interval_ms=200; 
+otc_coalescing_enough_coalesced_messages=8; 
+otc_coalescing_strategy=DISABLED; 
+otc_coalescing_window_us=200; 
+page_size_fail_threshold=-1; 
+page_size_warn_threshold=-1; 
+partition_denylist_enabled=false; 
+partition_keys_in_select_fail_threshold=-1; 
+partition_keys_in_select_warn_threshold=-1; 
+partitioner=org.apache.cassandra.dht.Murmur3Partitioner; 
+paxos_cache_size=null; 
+paxos_contention_max_wait=null; 
+paxos_contention_min_delta=null; 
+paxos_contention_min_wait=null; 
+paxos_contention_wait_randomizer=null; 
+paxos_on_linearizability_violations=ignore; 
+paxos_purge_grace_period=60s; 
+paxos_repair_enabled=true; 
+paxos_repair_parallelism=-1; 
+paxos_state_purging=null; 
+paxos_topology_repair_no_dc_checks=false; 
+paxos_topology_repair_strict_each_quorum=false; 
+paxos_variant=v1; 
+periodic_commitlog_sync_lag_block=null; 
+permissions_cache_active_update=false; 
+permissions_cache_max_entries=1000; 
+permissions_update_interval=null; 
+permissions_validity=2000ms; 
+phi_convict_threshold=8.0; 
+prepared_statements_cache_size=null; 
+range_request_timeout=10000ms; 
+range_tombstone_list_growth_factor=1.5; 
+read_before_write_list_operations_enabled=true; 
+read_consistency_levels_disallowed=[]; 
+read_consistency_levels_warned=[]; 
+read_request_timeout=5000ms; 
+read_thresholds_enabled=false; 
+reject_repair_compaction_threshold=2147483647; 
+repair_command_pool_full_strategy=queue; 
+repair_command_pool_size=0; 
+repair_request_timeout=120000ms; 
+repair_session_max_tree_depth=null; 
+repair_session_space=null; 
+repair_state_expires=3d; 
+repair_state_size=100000; 
+repaired_data_tracking_for_partition_reads_enabled=false; 
+repaired_data_tracking_for_range_reads_enabled=false; 
+report_unconfirmed_repaired_data_mismatches=false; 
+request_timeout=10000ms; 
+role_manager=CassandraRoleManager; 
+roles_cache_active_update=false; 
+roles_cache_max_entries=1000; 
+roles_update_interval=null; 
+roles_validity=2000ms; 
+row_cache_class_name=org.apache.cassandra.cache.OHCProvider; 
+row_cache_keys_to_save=2147483647; 
+row_cache_save_period=0s; 
+row_cache_size=0MiB; 
+row_index_read_size_fail_threshold=null; 
+row_index_read_size_warn_threshold=null; 
+rpc_address=0.0.0.0; 
+rpc_interface=null; 
+rpc_interface_prefer_ipv6=false; 
+rpc_keepalive=true; sasi_indexes_enabled=false; 
+saved_caches_directory=null; 
+scripted_user_defined_functions_enabled=false; 
+secondary_indexes_enabled=true; 
+secondary_indexes_per_table_fail_threshold=-1; 
+secondary_indexes_per_table_warn_threshold=-1; 
+seed_provider=org.apache.cassandra.locator.SimpleSeedProvider{seeds=cassandra1,cassandra2}; 
+server_encryption_options=<REDACTED>; 
+skip_paxos_repair_on_topology_change=false; 
+skip_paxos_repair_on_topology_change_keyspaces=[]; 
+slow_query_log_timeout=500ms; 
+snapshot_before_compaction=false; 
+snapshot_links_per_second=0; 
+snapshot_on_duplicate_row_detection=false; 
+snapshot_on_repaired_data_mismatch=false; 
+ssl_storage_port=7001; 
+sstable_preemptive_open_interval=50MiB; 
+start_native_transport=true; 
+startup_checks={}; 
+storage_port=7000; 
+stream_entire_sstables=true; 
+stream_throughput_outbound=24MiB/s; 
+streaming_connections_per_host=1; 
+streaming_keep_alive_period=300s; 
+streaming_slow_events_log_timeout=10s; 
+streaming_state_expires=3d; 
+streaming_state_size=40MiB; 
+streaming_stats_enabled=true; 
+table_count_warn_threshold=150; 
+table_properties_disallowed=[]; 
+table_properties_ignored=[]; 
+table_properties_warned=[]; 
+tables_fail_threshold=-1; 
+tables_warn_threshold=-1; 
+tombstone_failure_threshold=100000; 
+tombstone_warn_threshold=1000; 
+top_partitions_enabled=true; 
+trace_type_query_ttl=1d; 
+trace_type_repair_ttl=7d; 
+transient_replication_enabled=false; 
+transparent_data_encryption_options=org.apache.cassandra.config.TransparentDataEncryptionOptions@53dacd14; 
+traverse_auth_from_root=false; 
+trickle_fsync=false; 
+trickle_fsync_interval=10240KiB; 
+truncate_request_timeout=60000ms; 
+uncompressed_tables_enabled=true; 
+unlogged_batch_across_partitions_warn_threshold=10; 
+use_deterministic_table_id=false; 
+use_offheap_merkle_trees=true; 
+use_statements_enabled=true; 
+user_defined_functions_enabled=false; 
+user_defined_functions_fail_timeout=1500ms; 
+user_defined_functions_threads_enabled=true; 
+user_defined_functions_warn_timeout=500ms; 
+user_function_timeout_policy=die; 
+user_timestamps_enabled=true; 
+uuid_sstable_identifiers_enabled=false; 
+validation_preview_purge_head_start=3600s; 
+windows_timer_interval=0; 
+write_consistency_levels_disallowed=[]; 
+write_consistency_levels_warned=[]; 
+write_request_timeout=2000ms
+
+]
+
+Only 55.026GiB free across all data volumes. Consider adding more capacity to your cluster or removing obsolete snapshots
+
+JNA mlockall successful
+
+Maximum number of memory map areas per process (vm.max_map_count) 262144 is too low, recommended value: 1048575, you can change it with sysctl.
+
+Creating replication strategy zipkin2 params KeyspaceParams{durable_writes=false, replication=ReplicationParams{class=org.apache.cassandra.locator.SimpleStrategy, replication_factor=2}}
+
+Cassandra version: 4.1.4
+Using Netty Version: [netty-buffer=netty-buffer-4.1.58.Final.10b03e6, netty-codec=netty-codec-4.1.58.Final.10b03e6, netty-codec-dns=netty-codec-dns-4.1.58.Final.10b03e6,...]
+
+00:48 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.712MiB (33%) on-heap, 0.000KiB (0%) off-heap
+00:48 - Writing Memtable-sensor_data@667926331(120.403MiB serialized bytes, 605544 ops, 363.712MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+00:49 - Completed flushing 1-big-Data.db (114.004MiB) for commitlog position CommitLogPosition(segmentId=1713355030951, position=6419927)
+
+02:50 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+02:50 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.389MiB (33%) on-heap, 0.000KiB (0%) off-heap
+02:50 - Writing Memtable-sensor_data@216348991(120.320MiB serialized bytes, 604899 ops, 363.389MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+02:51 - Completed flushing 2-big-Data.db (113.922MiB) for commitlog position CommitLogPosition(segmentId=1713355030955, position=12689835)
+
+04:52 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+04:52 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.386MiB (33%) on-heap, 0.000KiB (0%) off-heap
+04:52 - Writing Memtable-sensor_data@1745778349(120.283MiB serialized bytes, 604921 ops, 363.387MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+04:53 - Completed flushing 3-big-Data.db (113.885MiB) for commitlog position CommitLogPosition(segmentId=1713355030959, position=18284801)
+
+06:54 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+06:54 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.386MiB (33%) on-heap, 0.000KiB (0%) off-heap
+06:54 - Writing Memtable-sensor_data@1369540010(120.268MiB serialized bytes, 604902 ops, 363.388MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+06:55 - Completed flushing 4-big-Data.db (113.872MiB) for commitlog position CommitLogPosition(segmentId=1713355030963, position=23862021)
+06:55 - Compacting [1-big-Data.db:level=0, 4-big-Data.db:level=0, 3-big-Data.db:level=0, 2-big-Data.db:level=0, ]
+
+07:01 - Deleting sstable: nb-4-big
+07:01 - Compacted 4 sstables to nb-5-big, to level=0.  404.706MiB to 399.854MiB (~98% of original) in 6,156ms.  Read Throughput = 65.734MiB/s, Write Throughput = 64.946MiB/s, Row Throughput = ~475,957/s.  1,815,492 total partitions merged to 911,438.  Partition merge counts were {1:296411, 2:368682, 3:203663, 4:42682, }. Time spent writing keys = 5,942ms
+07:01 - Deleting sstable: nb-3-big
+07:01 - Deleting sstable: nb-1-big
+07:01 - Deleting sstable: nb-2-big
+
+08:56 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+08:56 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.266MiB (33%) on-heap, 0.000KiB (0%) off-heap
+08:56 - Writing Memtable-sensor_data@1376003080(120.218MiB serialized bytes, 604601 ops, 363.266MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+08:57 - Completed flushing 6-big-Data.db (113.828MiB) for commitlog position CommitLogPosition(segmentId=1713355030967, position=30014564)
+
+10:59 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+10:59 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.263MiB (33%) on-heap, 0.000KiB (0%) off-heap
+10:59 - Writing Memtable-sensor_data@1138275408(120.228MiB serialized bytes, 604721 ops, 363.263MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+10:59 - Completed flushing 7-big-Data.db (113.832MiB) for commitlog position CommitLogPosition(segmentId=1713355030972, position=1991761)
+
+13:01 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+13:01 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.151MiB (33%) on-heap, 0.000KiB (0%) off-heap
+13:01 - Writing Memtable-sensor_data@600736890(120.230MiB serialized bytes, 604493 ops, 363.154MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+13:02 - Completed flushing 8-big-Data.db (113.837MiB) for commitlog position CommitLogPosition(segmentId=1713355030976, position=8157703)
+
+15:03 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+15:03 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.146MiB (33%) on-heap, 0.000KiB (0%) off-heap
+15:03 - Writing Memtable-sensor_data@1305426868(120.239MiB serialized bytes, 604609 ops, 363.148MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+15:04 - Completed flushing 9-big-Data.db (113.840MiB) for commitlog position CommitLogPosition(segmentId=1713355030980, position=13701440)
+15:04 - Compacting[7-big-Data.db:level=0, 6-big-Data.db:level=0, 8-big-Data.db:level=0, 9-big-Data.db:level=0, ]
+
+15:11 - Deleting sstable: nb-7-big
+15:11 - Compacted 4 sstables to nb-10-big, to level=0.  404.437MiB to 399.443MiB (~98% of original) in 7,283ms.  Read Throughput = 55.531MiB/s, Write Throughput = 54.845MiB/s, Row Throughput = ~416,208/s.  1,814,341 total partitions merged to 911,240.  Partition merge counts were {1:295981, 2:369736, 3:203204, 4:42319, }. Time spent writing keys = 7,087ms
+15:11 - Deleting sstable: nb-6-big
+15:11 - Deleting sstable: nb-8-big
+15:11 - Deleting sstable: nb-9-big
+
+17:05 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+17:05 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.146MiB (33%) on-heap, 0.000KiB (0%) off-heap
+17:05 - Writing Memtable-sensor_data@1872706610(120.223MiB serialized bytes, 604553 ops, 363.151MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+17:06 - Completed flushing 11-big-Data.db (113.827MiB) for commitlog position CommitLogPosition(segmentId=1713355030984, position=19225493)
+
+19:07 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+19:07 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.026MiB (33%) on-heap, 0.000KiB (0%) off-heap
+19:07 - Writing Memtable-sensor_data@653204558(120.110MiB serialized bytes, 604131 ops, 363.029MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+19:08 - Completed flushing 12-big-Data.db (113.729MiB) for commitlog position CommitLogPosition(segmentId=1713355030988, position=25251995)
+
+21:09 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+21:09 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 363.023MiB (33%) on-heap, 0.000KiB (0%) off-heap
+21:09 - Writing Memtable-sensor_data@1106226870(120.159MiB serialized bytes, 604220 ops, 363.025MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+21:10 - Completed flushing 13-big-Data.db (113.772MiB) for commitlog position CommitLogPosition(segmentId=1713355030992, position=30698993)
+
+23:11 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+23:11 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 362.903MiB (33%) on-heap, 0.000KiB (0%) off-heap
+23:11 - Writing Memtable-sensor_data@247635552(120.090MiB serialized bytes, 604021 ops, 362.904MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+23:12 - Completed flushing 14-big-Data.db (113.707MiB) for commitlog position CommitLogPosition(segmentId=1713355030997, position=3149642)
+23:12  - Compacting[11-big-Data.db:level=0, 14-big-Data.db:level=0, 13-big-Data.db:level=0, 12-big-Data.db:level=0, ]
+
+23:19 - Deleting sstable: nb-11-big
+23:19 - Deleting sstable: nb-14-big
+23:19 - Compacted 4 sstables to nb-15-big, to level=0.  404.076MiB to 399.156MiB (~98% of original) in 6,676ms.  Read Throughput = 60.525MiB/s, Write Throughput = 59.788MiB/s, Row Throughput = ~475,344/s.  1,814,091 total partitions merged to 910,484.  Partition merge counts were {1:295490, 2:369114, 3:203147, 4:42733, }. Time spent writing keys = 6,559ms
+23:19 - Deleting sstable: nb-13-big
+23:19 - Deleting sstable: nb-12-big
+
+25:13 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+25:13 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 362.907MiB (33%) on-heap, 0.000KiB (0%) off-heap
+25:13 - Writing Memtable-sensor_data@875785763(120.079MiB serialized bytes, 603902 ops, 362.909MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+25:14 - Completed flushing 16-big-Data.db (113.702MiB) for commitlog position CommitLogPosition(segmentId=1713355031001, position=8503394)
+
+27:15 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+27:15 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 362.898MiB (33%) on-heap, 0.000KiB (0%) off-heap
+27:15 - Writing Memtable-sensor_data@1705212748(120.069MiB serialized bytes, 604011 ops, 362.898MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+27:16 - Completed flushing 17-big-Data.db (113.686MiB) for commitlog position CommitLogPosition(segmentId=1713355031005, position=13849158)
+27:23 INFO  [Service Thread] 2024-04-17 12:27:23,343 GCInspector.java:294 - ConcurrentMarkSweep GC in 377ms.  CMS Old Gen: 2911697424 -> 509770272; CodeHeap 'non-profiled nmethods': 16152704 -> 16168320; CodeHeap 'profiled nmethods': 25458816 -> 25525760; Metaspace: 54962648 -> 54973448; Par Eden Space: 3068800 -> 469233288; 
+
+29:17 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+29:17 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 362.778MiB (33%) on-heap, 0.000KiB (0%) off-heap
+29:17 - Writing Memtable-sensor_data@1957904377(120.080MiB serialized bytes, 603766 ops, 362.780MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+29:18 - Completed flushing 18-big-Data.db (113.700MiB) for commitlog position CommitLogPosition(segmentId=1713355031009, position=19839579)
+
+31:19 - Flushing largest CFS to free up room. Used total: 0.33/0.00, live: 0.33/0.00, flushing: 0.00/0.00, this: 0.33/0.00
+31:19 - Enqueuing flush of easy_cass_stress.sensor_data, Reason: MEMTABLE_LIMIT, Usage: 362.779MiB (33%) on-heap, 0.000KiB (0%) off-heap
+31:19 - Writing Memtable-sensor_data@283114682(120.087MiB serialized bytes, 603862 ops, 362.780MiB (33%) on-heap, 0.000KiB (0%) off-heap), flushed range = [min(-9223372036854775808), max(9223372036854775807))
+31:20 - Completed flushing 19-big-Data.db (113.702MiB) for commitlog position CommitLogPosition(segmentId=1713355031013, position=25204774)
+
+
+32:00 - Table                       			Memtable ops			data
+32:00 - easy_cass_stress.sensor_data     		194639					40825141
+
+
